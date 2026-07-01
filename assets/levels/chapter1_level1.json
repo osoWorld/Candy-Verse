@@ -1,0 +1,10 @@
+{
+  "levelId": "chapter1_level1",
+  "rows": 7,
+  "columns": 7,
+  "goalType": "score",
+  "targetValue": 5000,
+  "moveLimit": 20,
+  "availableStates": ["molten", "frost"],
+  "preLevelBoosters": ["fusionBooster", "tempoMeter"]
+}

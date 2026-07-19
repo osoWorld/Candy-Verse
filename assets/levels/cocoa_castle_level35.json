@@ -1,0 +1,135 @@
+{
+  "levelId": "cocoa_castle_level35",
+  "kingdomId": "cocoa_castle",
+  "levelNumber": 35,
+  "rows": 8,
+  "columns": 8,
+  "difficulty": "superHard",
+  "levelKind": "jelly",
+  "goalType": "clearObstacle",
+  "targetValue": 15,
+  "moveLimit": 18,
+  "availableStates": [
+    "none",
+    "living",
+    "syrup"
+  ],
+  "availablePreGameBoosters": [
+    "fusionBooster",
+    "architectTile",
+    "echoCandy"
+  ],
+  "preLevelBoosters": [
+    "fusionBooster",
+    "architectTile",
+    "echoCandy"
+  ],
+  "boardMask": {},
+  "spawnRules": {
+    "seed": 1035,
+    "baseCandies": [
+      "cocoa",
+      "citrus",
+      "berry",
+      "mint",
+      "cream"
+    ],
+    "reactiveStates": [
+      "none",
+      "living",
+      "syrup"
+    ]
+  },
+  "blockers": [
+    {
+      "position": "1,0",
+      "type": "chocolate",
+      "hitPoints": 1
+    },
+    {
+      "position": "1,1",
+      "type": "chocolate",
+      "hitPoints": 1
+    },
+    {
+      "position": "1,2",
+      "type": "chocolate",
+      "hitPoints": 1
+    },
+    {
+      "position": "1,3",
+      "type": "chocolate",
+      "hitPoints": 1
+    },
+    {
+      "position": "1,4",
+      "type": "chocolate",
+      "hitPoints": 1
+    },
+    {
+      "position": "1,5",
+      "type": "chocolate",
+      "hitPoints": 1
+    },
+    {
+      "position": "1,6",
+      "type": "chocolate",
+      "hitPoints": 1
+    },
+    {
+      "position": "2,0",
+      "type": "chocolate",
+      "hitPoints": 1
+    },
+    {
+      "position": "2,1",
+      "type": "chocolate",
+      "hitPoints": 1
+    },
+    {
+      "position": "2,2",
+      "type": "chocolate",
+      "hitPoints": 1
+    },
+    {
+      "position": "2,3",
+      "type": "chocolate",
+      "hitPoints": 1
+    },
+    {
+      "position": "2,4",
+      "type": "chocolate",
+      "hitPoints": 1
+    },
+    {
+      "position": "2,5",
+      "type": "chocolate",
+      "hitPoints": 1
+    },
+    {
+      "position": "2,6",
+      "type": "chocolate",
+      "hitPoints": 1
+    },
+    {
+      "position": "2,7",
+      "type": "chocolate",
+      "hitPoints": 1
+    }
+  ],
+  "starThresholds": [
+    8625,
+    10125,
+    12125
+  ],
+  "friendScoreSeed": 91035,
+  "allowStartingMatches": false,
+  "specialCandyRules": {
+    "allowRowClear": true,
+    "allowColumnClear": true,
+    "allowWrapped": true,
+    "allowColorOrb": true,
+    "allowFishCharm": true,
+    "allowAlchemyBomb": false
+  }
+}

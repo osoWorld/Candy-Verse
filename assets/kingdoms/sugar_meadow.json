@@ -1,0 +1,24 @@
+{
+  "kingdomId": "sugar_meadow",
+  "name": "Sugar Meadow",
+  "levelStart": 1,
+  "levelEnd": 20,
+  "palette": {
+    "sky": "#8BE8FF",
+    "ground": "#7ED957",
+    "accent": "#FF6FAE"
+  },
+  "story": {
+    "intro": "Pip begins the first lesson in living candy alchemy while the meadow fountain sleeps under sugar moss.",
+    "outro": "The fountain wakes in a burst of pink sparkle, and Grand Caramel Sage opens the road east."
+  },
+  "characters": [
+    "Pip the Apprentice",
+    "Grand Caramel Sage"
+  ],
+  "mapMotifs": [
+    "meadow",
+    "candyPath",
+    "sugarFountain"
+  ]
+}

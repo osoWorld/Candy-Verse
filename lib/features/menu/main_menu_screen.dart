@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../core/constants/navigation_constants.dart';
 import '../../core/constants/ui_constants.dart';
 import '../../core/theme/candy_alchemy_colors.dart';
+import '../profile/presentation/player_profile_dialog.dart';
 
 /// Main Menu screen in the Flutter UI layer.
 class MainMenuScreen extends StatelessWidget {
@@ -32,7 +35,7 @@ class MainMenuScreen extends StatelessWidget {
               ),
               const SizedBox(height: uiSectionGap),
               FilledButton.icon(
-                onPressed: () => Get.toNamed(AppRoutes.levelMap),
+                onPressed: () => Get.toNamed(AppRoutes.kingdomMap),
                 icon: const Icon(Icons.play_arrow_rounded),
                 label: const Text('Play'),
               ),
@@ -41,6 +44,12 @@ class MainMenuScreen extends StatelessWidget {
                 onPressed: () {},
                 icon: const Icon(Icons.tune_rounded),
                 label: const Text('Settings'),
+              ),
+              const SizedBox(height: uiControlGap),
+              OutlinedButton.icon(
+                onPressed: () => unawaited(showPlayerProfileDialog<void>()),
+                icon: const Icon(Icons.person_rounded),
+                label: const Text('Profile'),
               ),
               const SizedBox(height: uiControlGap),
               OutlinedButton.icon(

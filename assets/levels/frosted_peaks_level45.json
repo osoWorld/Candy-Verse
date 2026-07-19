@@ -1,0 +1,105 @@
+{
+  "levelId": "frosted_peaks_level45",
+  "kingdomId": "frosted_peaks",
+  "levelNumber": 45,
+  "rows": 8,
+  "columns": 8,
+  "difficulty": "simple",
+  "levelKind": "jelly",
+  "goalType": "clearObstacle",
+  "targetValue": 9,
+  "moveLimit": 21,
+  "availableStates": [
+    "none",
+    "frost",
+    "living"
+  ],
+  "availablePreGameBoosters": [
+    "fusionBooster",
+    "architectTile",
+    "echoCandy"
+  ],
+  "preLevelBoosters": [
+    "fusionBooster",
+    "architectTile",
+    "echoCandy"
+  ],
+  "boardMask": {},
+  "spawnRules": {
+    "seed": 1045,
+    "baseCandies": [
+      "cocoa",
+      "citrus",
+      "berry",
+      "mint",
+      "cream"
+    ],
+    "reactiveStates": [
+      "none",
+      "frost",
+      "living"
+    ]
+  },
+  "blockers": [
+    {
+      "position": "4,6",
+      "type": "ice",
+      "hitPoints": 2
+    },
+    {
+      "position": "4,7",
+      "type": "ice",
+      "hitPoints": 2
+    },
+    {
+      "position": "5,0",
+      "type": "ice",
+      "hitPoints": 2
+    },
+    {
+      "position": "5,3",
+      "type": "ice",
+      "hitPoints": 2
+    },
+    {
+      "position": "5,4",
+      "type": "ice",
+      "hitPoints": 2
+    },
+    {
+      "position": "5,5",
+      "type": "ice",
+      "hitPoints": 2
+    },
+    {
+      "position": "6,0",
+      "type": "ice",
+      "hitPoints": 2
+    },
+    {
+      "position": "6,1",
+      "type": "ice",
+      "hitPoints": 2
+    },
+    {
+      "position": "6,2",
+      "type": "ice",
+      "hitPoints": 2
+    }
+  ],
+  "starThresholds": [
+    10375,
+    11875,
+    13875
+  ],
+  "friendScoreSeed": 91045,
+  "allowStartingMatches": false,
+  "specialCandyRules": {
+    "allowRowClear": true,
+    "allowColumnClear": true,
+    "allowWrapped": true,
+    "allowColorOrb": true,
+    "allowFishCharm": true,
+    "allowAlchemyBomb": false
+  }
+}

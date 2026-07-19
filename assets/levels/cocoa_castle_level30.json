@@ -1,0 +1,125 @@
+{
+  "levelId": "cocoa_castle_level30",
+  "kingdomId": "cocoa_castle",
+  "levelNumber": 30,
+  "rows": 7,
+  "columns": 7,
+  "difficulty": "hard",
+  "levelKind": "jelly",
+  "goalType": "clearObstacle",
+  "targetValue": 13,
+  "moveLimit": 20,
+  "availableStates": [
+    "none",
+    "living",
+    "syrup"
+  ],
+  "availablePreGameBoosters": [
+    "fusionBooster",
+    "architectTile",
+    "echoCandy"
+  ],
+  "preLevelBoosters": [
+    "fusionBooster",
+    "architectTile",
+    "echoCandy"
+  ],
+  "boardMask": {},
+  "spawnRules": {
+    "seed": 1030,
+    "baseCandies": [
+      "cocoa",
+      "citrus",
+      "berry",
+      "mint",
+      "cream"
+    ],
+    "reactiveStates": [
+      "none",
+      "living",
+      "syrup"
+    ]
+  },
+  "blockers": [
+    {
+      "position": "3,0",
+      "type": "chocolate",
+      "hitPoints": 1
+    },
+    {
+      "position": "3,1",
+      "type": "chocolate",
+      "hitPoints": 1
+    },
+    {
+      "position": "3,2",
+      "type": "chocolate",
+      "hitPoints": 1
+    },
+    {
+      "position": "3,3",
+      "type": "chocolate",
+      "hitPoints": 1
+    },
+    {
+      "position": "3,4",
+      "type": "chocolate",
+      "hitPoints": 1
+    },
+    {
+      "position": "3,5",
+      "type": "chocolate",
+      "hitPoints": 1
+    },
+    {
+      "position": "4,0",
+      "type": "chocolate",
+      "hitPoints": 1
+    },
+    {
+      "position": "4,1",
+      "type": "chocolate",
+      "hitPoints": 1
+    },
+    {
+      "position": "4,2",
+      "type": "chocolate",
+      "hitPoints": 1
+    },
+    {
+      "position": "4,3",
+      "type": "chocolate",
+      "hitPoints": 1
+    },
+    {
+      "position": "4,4",
+      "type": "chocolate",
+      "hitPoints": 1
+    },
+    {
+      "position": "4,5",
+      "type": "chocolate",
+      "hitPoints": 1
+    },
+    {
+      "position": "5,6",
+      "type": "chocolate",
+      "hitPoints": 1
+    }
+  ],
+  "starThresholds": [
+    7750,
+    9250,
+    11250
+  ],
+  "friendScoreSeed": 91030,
+  "allowStartingMatches": false,
+  "specialCandyRules": {
+    "allowRowClear": true,
+    "allowColumnClear": true,
+    "allowWrapped": true,
+    "allowColorOrb": true,
+    "allowFishCharm": false,
+    "allowAlchemyBomb": false
+  }
+}

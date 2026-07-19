@@ -1,14 +1,31 @@
 import 'package:hive_flutter/hive_flutter.dart';
 
 import '../../core/constants/persistence_constants.dart';
+import '../models/booster_inventory_record.dart';
+import '../models/daily_reward_state.dart';
+import '../models/game_settings.dart';
 import '../models/leaderboard_entry.dart';
 import '../models/player_progress_record.dart';
+import 'booster_inventory_repository.dart';
+import 'daily_reward_repository.dart';
+import 'kingdom_gate_reward_repository.dart';
 import 'leaderboard_repository.dart';
 import 'progress_repository.dart';
+import 'settings_repository.dart';
+import 'story_progress_repository.dart';
+import 'tutorial_progress_repository.dart';
 
 /// Hive-backed offline sync store in the data layer.
 class HiveSyncStore
-    implements ProgressLocalDataSource, LeaderboardLocalDataSource {
+    implements
+        ProgressLocalDataSource,
+        LeaderboardLocalDataSource,
+        BoosterInventoryLocalDataSource,
+        SettingsLocalDataSource,
+        StoryProgressLocalDataSource,
+        KingdomGateRewardLocalDataSource,
+        DailyRewardLocalDataSource,
+        TutorialProgressLocalDataSource {
   /// Creates a Hive sync store with an injectable Hive interface.
   HiveSyncStore({HiveInterface? hive}) : hive = hive ?? Hive;
 
@@ -105,6 +122,155 @@ class HiveSyncStore
     await box.delete(entry.storageKey);
   }
 
+  /// Caches one booster inventory [record] locally.
+  @override
+  Future<void> cacheBoosterInventory(BoosterInventoryRecord record) async {
+    final box = await _openBox(boosterInventoryBoxName);
+    await box.put(record.storageKey, record.toMap());
+  }
+
+  /// Fetches cached booster inventory rows for [playerId].
+  @override
+  Future<List<BoosterInventoryRecord>> fetchCachedBoosterInventory(
+    String playerId,
+  ) async {
+    final box = await _openBox(boosterInventoryBoxName);
+    return _boosterInventoryRecordsFromBox(
+      box,
+    ).where((record) => record.playerId == playerId).toList(growable: false);
+  }
+
+  /// Queues one booster inventory [record] for later sync.
+  @override
+  Future<void> queuePendingBoosterInventory(
+    BoosterInventoryRecord record,
+  ) async {
+    final box = await _openBox(pendingBoosterInventoryBoxName);
+    await box.put(record.storageKey, record.toMap());
+  }
+
+  /// Fetches all pending booster inventory rows.
+  @override
+  Future<List<BoosterInventoryRecord>> fetchPendingBoosterInventory() async {
+    final box = await _openBox(pendingBoosterInventoryBoxName);
+    return _boosterInventoryRecordsFromBox(box);
+  }
+
+  /// Removes synced pending [record] from the local queue.
+  @override
+  Future<void> markBoosterInventorySynced(BoosterInventoryRecord record) async {
+    final box = await _openBox(pendingBoosterInventoryBoxName);
+    await box.delete(record.storageKey);
+  }
+
+  /// Loads persisted gameplay settings.
+  @override
+  Future<GameSettings?> loadSettings() async {
+    final box = await _openBox(gameSettingsBoxName);
+    final value = box.get(gameSettingsStorageKey);
+    if (value is! Map) {
+      return null;
+    }
+    return GameSettings.fromMap(Map<String, dynamic>.from(value));
+  }
+
+  /// Saves [settings] locally for the next app launch.
+  @override
+  Future<void> saveSettings(GameSettings settings) async {
+    final box = await _openBox(gameSettingsBoxName);
+    await box.put(gameSettingsStorageKey, settings.toMap());
+  }
+
+  /// Loads seen kingdom story panel keys from local storage.
+  @override
+  Future<Set<String>> loadSeenStoryPanelKeys() async {
+    final box = await _openBox(storyProgressBoxName);
+    final value = box.get(seenStoryPanelsStorageKey);
+    if (value is! List) {
+      return const <String>{};
+    }
+    return {
+      for (final item in value)
+        if (item is String) item,
+    };
+  }
+
+  /// Marks [storyPanelKey] as seen in local storage.
+  @override
+  Future<void> markStoryPanelSeen(String storyPanelKey) async {
+    final box = await _openBox(storyProgressBoxName);
+    final nextKeys = await loadSeenStoryPanelKeys();
+    await box.put(
+      seenStoryPanelsStorageKey,
+      [...nextKeys, storyPanelKey]..sort(),
+    );
+  }
+
+  /// Loads claimed kingdom gate reward keys from local storage.
+  @override
+  Future<Set<String>> loadClaimedKingdomGateRewardKeys() async {
+    final box = await _openBox(kingdomGateRewardBoxName);
+    final value = box.get(claimedKingdomGateRewardsStorageKey);
+    if (value is! List) {
+      return const <String>{};
+    }
+    return {
+      for (final item in value)
+        if (item is String) item,
+    };
+  }
+
+  /// Marks [gateRewardKey] as claimed in local storage.
+  @override
+  Future<void> markKingdomGateRewardClaimed(String gateRewardKey) async {
+    final box = await _openBox(kingdomGateRewardBoxName);
+    final nextKeys = await loadClaimedKingdomGateRewardKeys();
+    await box.put(
+      claimedKingdomGateRewardsStorageKey,
+      [...nextKeys, gateRewardKey]..sort(),
+    );
+  }
+
+  /// Loads the local daily reward state.
+  @override
+  Future<DailyRewardState?> loadDailyRewardState() async {
+    final box = await _openBox(dailyRewardBoxName);
+    final value = box.get(dailyRewardStateStorageKey);
+    if (value is! Map) {
+      return null;
+    }
+    return DailyRewardState.fromMap(Map<String, dynamic>.from(value));
+  }
+
+  /// Saves [state] to local daily reward storage.
+  @override
+  Future<void> saveDailyRewardState(DailyRewardState state) async {
+    final box = await _openBox(dailyRewardBoxName);
+    await box.put(dailyRewardStateStorageKey, state.toMap());
+  }
+
+  /// Loads seen tutorial prompt keys from local storage.
+  @override
+  Future<Set<String>> loadSeenTutorialKeys() async {
+    final box = await _openBox(tutorialProgressBoxName);
+    final value = box.get(seenTutorialsStorageKey);
+    if (value is! List) {
+      return const <String>{};
+    }
+    return {
+      for (final item in value)
+        if (item is String) item,
+    };
+  }
+
+  /// Marks [tutorialKey] as seen in local tutorial storage.
+  @override
+  Future<void> markTutorialSeen(String tutorialKey) async {
+    final box = await _openBox(tutorialProgressBoxName);
+    final nextKeys = await loadSeenTutorialKeys();
+    await box.put(seenTutorialsStorageKey, [...nextKeys, tutorialKey]..sort());
+  }
+
   Future<Box<dynamic>> _openBox(String boxName) {
     if (hive.isBoxOpen(boxName)) {
       return Future.value(hive.box<dynamic>(boxName));
@@ -125,6 +291,16 @@ class HiveSyncStore
       for (final value in box.values)
         if (value is Map)
           LeaderboardEntry.fromMap(Map<String, dynamic>.from(value)),
+    ];
+  }
+
+  List<BoosterInventoryRecord> _boosterInventoryRecordsFromBox(
+    Box<dynamic> box,
+  ) {
+    return [
+      for (final value in box.values)
+        if (value is Map)
+          BoosterInventoryRecord.fromMap(Map<String, dynamic>.from(value)),
     ];
   }
 }

@@ -1,0 +1,82 @@
+{
+  "levelId": "syrup_lagoon_level86",
+  "kingdomId": "syrup_lagoon",
+  "levelNumber": 86,
+  "rows": 9,
+  "columns": 9,
+  "difficulty": "simple",
+  "levelKind": "score",
+  "goalType": "score",
+  "targetValue": 11250,
+  "moveLimit": 20,
+  "availableStates": [
+    "none",
+    "syrup",
+    "living",
+    "spice"
+  ],
+  "availablePreGameBoosters": [
+    "fusionBooster",
+    "architectTile",
+    "echoCandy"
+  ],
+  "preLevelBoosters": [
+    "fusionBooster",
+    "architectTile",
+    "echoCandy"
+  ],
+  "boardMask": {},
+  "spawnRules": {
+    "seed": 1086,
+    "baseCandies": [
+      "cocoa",
+      "citrus",
+      "berry",
+      "mint",
+      "cream"
+    ],
+    "reactiveStates": [
+      "none",
+      "syrup",
+      "living",
+      "spice"
+    ]
+  },
+  "blockers": [
+    {
+      "position": "7,0",
+      "type": "syrupLock",
+      "hitPoints": 1
+    },
+    {
+      "position": "7,6",
+      "type": "syrupLock",
+      "hitPoints": 1
+    },
+    {
+      "position": "7,7",
+      "type": "syrupLock",
+      "hitPoints": 1
+    },
+    {
+      "position": "7,8",
+      "type": "syrupLock",
+      "hitPoints": 1
+    }
+  ],
+  "starThresholds": [
+    11250,
+    16875,
+    22500
+  ],
+  "friendScoreSeed": 91086,
+  "allowStartingMatches": false,
+  "specialCandyRules": {
+    "allowRowClear": true,
+    "allowColumnClear": true,
+    "allowWrapped": true,
+    "allowColorOrb": true,
+    "allowFishCharm": true,
+    "allowAlchemyBomb": true
+  }
+}

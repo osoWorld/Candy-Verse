@@ -1,0 +1,167 @@
+{
+  "levelId": "molten_bakery_level80",
+  "kingdomId": "molten_bakery",
+  "levelNumber": 80,
+  "rows": 9,
+  "columns": 9,
+  "difficulty": "legendary",
+  "levelKind": "jelly",
+  "goalType": "clearObstacle",
+  "targetValue": 21,
+  "moveLimit": 21,
+  "availableStates": [
+    "none",
+    "molten",
+    "frost",
+    "spice"
+  ],
+  "availablePreGameBoosters": [
+    "fusionBooster",
+    "architectTile",
+    "echoCandy"
+  ],
+  "preLevelBoosters": [
+    "fusionBooster",
+    "architectTile",
+    "echoCandy"
+  ],
+  "boardMask": {},
+  "spawnRules": {
+    "seed": 1080,
+    "baseCandies": [
+      "cocoa",
+      "citrus",
+      "berry",
+      "mint",
+      "cream"
+    ],
+    "reactiveStates": [
+      "none",
+      "molten",
+      "frost",
+      "spice"
+    ]
+  },
+  "blockers": [
+    {
+      "position": "1,0",
+      "type": "spiceCrate",
+      "hitPoints": 3
+    },
+    {
+      "position": "1,1",
+      "type": "spiceCrate",
+      "hitPoints": 3
+    },
+    {
+      "position": "1,2",
+      "type": "spiceCrate",
+      "hitPoints": 3
+    },
+    {
+      "position": "1,3",
+      "type": "spiceCrate",
+      "hitPoints": 3
+    },
+    {
+      "position": "1,4",
+      "type": "spiceCrate",
+      "hitPoints": 3
+    },
+    {
+      "position": "1,5",
+      "type": "spiceCrate",
+      "hitPoints": 3
+    },
+    {
+      "position": "1,6",
+      "type": "spiceCrate",
+      "hitPoints": 3
+    },
+    {
+      "position": "1,7",
+      "type": "spiceCrate",
+      "hitPoints": 3
+    },
+    {
+      "position": "1,8",
+      "type": "spiceCrate",
+      "hitPoints": 3
+    },
+    {
+      "position": "2,0",
+      "type": "spiceCrate",
+      "hitPoints": 3
+    },
+    {
+      "position": "2,1",
+      "type": "spiceCrate",
+      "hitPoints": 3
+    },
+    {
+      "position": "2,2",
+      "type": "spiceCrate",
+      "hitPoints": 3
+    },
+    {
+      "position": "2,3",
+      "type": "spiceCrate",
+      "hitPoints": 3
+    },
+    {
+      "position": "2,4",
+      "type": "spiceCrate",
+      "hitPoints": 3
+    },
+    {
+      "position": "2,5",
+      "type": "spiceCrate",
+      "hitPoints": 3
+    },
+    {
+      "position": "2,6",
+      "type": "spiceCrate",
+      "hitPoints": 3
+    },
+    {
+      "position": "2,7",
+      "type": "spiceCrate",
+      "hitPoints": 3
+    },
+    {
+      "position": "2,8",
+      "type": "spiceCrate",
+      "hitPoints": 3
+    },
+    {
+      "position": "4,6",
+      "type": "spiceCrate",
+      "hitPoints": 3
+    },
+    {
+      "position": "4,7",
+      "type": "spiceCrate",
+      "hitPoints": 3
+    },
+    {
+      "position": "5,3",
+      "type": "spiceCrate",
+      "hitPoints": 3
+    }
+  ],
+  "starThresholds": [
+    16500,
+    18000,
+    20000
+  ],
+  "friendScoreSeed": 91080,
+  "allowStartingMatches": false,
+  "specialCandyRules": {
+    "allowRowClear": true,
+    "allowColumnClear": true,
+    "allowWrapped": true,
+    "allowColorOrb": true,
+    "allowFishCharm": true,
+    "allowAlchemyBomb": true
+  }
+}

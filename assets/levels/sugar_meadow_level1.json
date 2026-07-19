@@ -1,0 +1,57 @@
+{
+  "levelId": "sugar_meadow_level1",
+  "kingdomId": "sugar_meadow",
+  "levelNumber": 1,
+  "rows": 7,
+  "columns": 7,
+  "difficulty": "simple",
+  "levelKind": "score",
+  "goalType": "score",
+  "targetValue": 3250,
+  "moveLimit": 19,
+  "availableStates": [
+    "none",
+    "living"
+  ],
+  "availablePreGameBoosters": [
+    "fusionBooster",
+    "architectTile",
+    "echoCandy"
+  ],
+  "preLevelBoosters": [
+    "fusionBooster",
+    "architectTile",
+    "echoCandy"
+  ],
+  "boardMask": {},
+  "spawnRules": {
+    "seed": 1001,
+    "baseCandies": [
+      "cocoa",
+      "citrus",
+      "berry",
+      "mint",
+      "cream"
+    ],
+    "reactiveStates": [
+      "none",
+      "living"
+    ]
+  },
+  "blockers": [],
+  "starThresholds": [
+    3250,
+    4875,
+    6500
+  ],
+  "friendScoreSeed": 91001,
+  "allowStartingMatches": false,
+  "specialCandyRules": {
+    "allowRowClear": true,
+    "allowColumnClear": true,
+    "allowWrapped": false,
+    "allowColorOrb": false,
+    "allowFishCharm": false,
+    "allowAlchemyBomb": false
+  }
+}

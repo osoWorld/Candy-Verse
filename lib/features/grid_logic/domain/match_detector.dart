@@ -12,6 +12,7 @@ class MatchDetector {
     final rawMatches = <MatchGroup>[
       ..._detectHorizontalMatches(grid),
       ..._detectVerticalMatches(grid),
+      ..._detectSquareMatches(grid),
     ];
     return _mergeIntersectingMatches(rawMatches);
   }
@@ -65,6 +66,32 @@ class MatchDetector {
           runStart = row;
         }
         previousTile = currentTile;
+      }
+    }
+    return matches;
+  }
+
+  List<MatchGroup> _detectSquareMatches(GridState grid) {
+    final matches = <MatchGroup>[];
+    for (var row = 0; row < grid.rows - 1; row += 1) {
+      for (var column = 0; column < grid.columns - 1; column += 1) {
+        final topLeft = grid.tileAt(GridPosition(row: row, column: column));
+        if (topLeft == null) {
+          continue;
+        }
+        final positions = {
+          GridPosition(row: row, column: column),
+          GridPosition(row: row, column: column + 1),
+          GridPosition(row: row + 1, column: column),
+          GridPosition(row: row + 1, column: column + 1),
+        };
+        if (positions.every(
+          (position) => grid.tileAt(position)?.baseCandy == topLeft.baseCandy,
+        )) {
+          matches.add(
+            MatchGroup(baseCandy: topLeft.baseCandy, positions: positions),
+          );
+        }
       }
     }
     return matches;

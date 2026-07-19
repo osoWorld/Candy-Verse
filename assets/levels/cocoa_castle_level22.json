@@ -1,0 +1,95 @@
+{
+  "levelId": "cocoa_castle_level22",
+  "kingdomId": "cocoa_castle",
+  "levelNumber": 22,
+  "rows": 7,
+  "columns": 7,
+  "difficulty": "simple",
+  "levelKind": "mixed",
+  "goalType": "clearObstacle",
+  "targetValue": 7,
+  "moveLimit": 19,
+  "availableStates": [
+    "none",
+    "living",
+    "syrup"
+  ],
+  "availablePreGameBoosters": [
+    "fusionBooster",
+    "architectTile",
+    "echoCandy"
+  ],
+  "preLevelBoosters": [
+    "fusionBooster",
+    "architectTile",
+    "echoCandy"
+  ],
+  "boardMask": {},
+  "spawnRules": {
+    "seed": 1022,
+    "baseCandies": [
+      "cocoa",
+      "citrus",
+      "berry",
+      "mint",
+      "cream"
+    ],
+    "reactiveStates": [
+      "none",
+      "living",
+      "syrup"
+    ]
+  },
+  "blockers": [
+    {
+      "position": "1,0",
+      "type": "chocolate",
+      "hitPoints": 1
+    },
+    {
+      "position": "1,3",
+      "type": "chocolate",
+      "hitPoints": 1
+    },
+    {
+      "position": "1,4",
+      "type": "chocolate",
+      "hitPoints": 1
+    },
+    {
+      "position": "1,5",
+      "type": "chocolate",
+      "hitPoints": 1
+    },
+    {
+      "position": "2,0",
+      "type": "chocolate",
+      "hitPoints": 1
+    },
+    {
+      "position": "2,1",
+      "type": "chocolate",
+      "hitPoints": 1
+    },
+    {
+      "position": "2,2",
+      "type": "chocolate",
+      "hitPoints": 1
+    }
+  ],
+  "starThresholds": [
+    6350,
+    7850,
+    9850
+  ],
+  "friendScoreSeed": 91022,
+  "allowStartingMatches": false,
+  "specialCandyRules": {
+    "allowRowClear": true,
+    "allowColumnClear": true,
+    "allowWrapped": true,
+    "allowColorOrb": true,
+    "allowFishCharm": false,
+    "allowAlchemyBomb": false
+  }
+}

@@ -1,0 +1,113 @@
+{
+  "levelId": "sugar_meadow_level18",
+  "kingdomId": "sugar_meadow",
+  "levelNumber": 18,
+  "rows": 7,
+  "columns": 7,
+  "difficulty": "nightmarishlyHard",
+  "levelKind": "ingredientDrop",
+  "goalType": "clearObstacle",
+  "targetValue": 11,
+  "moveLimit": 22,
+  "availableStates": [
+    "none",
+    "living"
+  ],
+  "availablePreGameBoosters": [
+    "fusionBooster",
+    "architectTile",
+    "echoCandy"
+  ],
+  "preLevelBoosters": [
+    "fusionBooster",
+    "architectTile",
+    "echoCandy"
+  ],
+  "boardMask": {},
+  "spawnRules": {
+    "seed": 1018,
+    "baseCandies": [
+      "cocoa",
+      "citrus",
+      "berry",
+      "mint",
+      "cream"
+    ],
+    "reactiveStates": [
+      "none",
+      "living"
+    ]
+  },
+  "blockers": [
+    {
+      "position": "3,0",
+      "type": "wafer",
+      "hitPoints": 2
+    },
+    {
+      "position": "3,6",
+      "type": "wafer",
+      "hitPoints": 2
+    },
+    {
+      "position": "4,6",
+      "type": "wafer",
+      "hitPoints": 2
+    },
+    {
+      "position": "5,0",
+      "type": "wafer",
+      "hitPoints": 2
+    },
+    {
+      "position": "5,1",
+      "type": "wafer",
+      "hitPoints": 2
+    },
+    {
+      "position": "5,2",
+      "type": "wafer",
+      "hitPoints": 2
+    },
+    {
+      "position": "5,3",
+      "type": "wafer",
+      "hitPoints": 2
+    },
+    {
+      "position": "5,4",
+      "type": "wafer",
+      "hitPoints": 2
+    },
+    {
+      "position": "5,5",
+      "type": "wafer",
+      "hitPoints": 2
+    },
+    {
+      "position": "6,2",
+      "type": "wafer",
+      "hitPoints": 2
+    },
+    {
+      "position": "6,3",
+      "type": "wafer",
+      "hitPoints": 2
+    }
+  ],
+  "starThresholds": [
+    5650,
+    7150,
+    9150
+  ],
+  "friendScoreSeed": 91018,
+  "allowStartingMatches": false,
+  "specialCandyRules": {
+    "allowRowClear": true,
+    "allowColumnClear": true,
+    "allowWrapped": true,
+    "allowColorOrb": true,
+    "allowFishCharm": false,
+    "allowAlchemyBomb": false
+  }
+}

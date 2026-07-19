@@ -6,7 +6,10 @@ import 'package:get/get.dart';
 import '../../../core/constants/navigation_constants.dart';
 import '../../../core/constants/ui_constants.dart';
 import '../../../core/theme/candy_alchemy_colors.dart';
+import '../../kingdom_map/controllers/kingdom_map_controller.dart';
 import '../controllers/gameplay_controller.dart';
+import '../controllers/gameplay_outcome.dart';
+import '../controllers/gameplay_session.dart';
 
 /// LoseOverlay screen in the Flutter UI layer.
 ///
@@ -24,6 +27,7 @@ class LoseOverlay extends StatefulWidget {
 class _LoseOverlayState extends State<LoseOverlay>
     with TickerProviderStateMixin {
   late final GameplayController _gameplayController;
+  late final GameplayOutcome _outcome;
   late final AnimationController _dimController;
   late final AnimationController _promptController;
 
@@ -31,6 +35,7 @@ class _LoseOverlayState extends State<LoseOverlay>
   void initState() {
     super.initState();
     _gameplayController = Get.find<GameplayController>();
+    _outcome = _outcomeFromArguments(Get.arguments);
     _dimController = AnimationController(
       vsync: this,
       duration: const Duration(
@@ -55,7 +60,7 @@ class _LoseOverlayState extends State<LoseOverlay>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: CandyAlchemyColors.gameplayBackground,
       body: Stack(
         children: [
           Positioned.fill(
@@ -90,18 +95,37 @@ class _LoseOverlayState extends State<LoseOverlay>
                             fontWeight: FontWeight.w700,
                           ),
                     ),
+                    const SizedBox(height: uiControlGap),
+                    Text(
+                      _outcome.goalRemainingLabel,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: CandyAlchemyColors.cream,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const SizedBox(height: uiControlGap),
+                    Text(
+                      'Score ${_outcome.score}',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: CandyAlchemyColors.tileHighlight,
+                      ),
+                    ),
                     const SizedBox(height: uiSectionGap),
                     FilledButton.icon(
                       onPressed: () => Get.offNamed(
                         AppRoutes.gameplay,
-                        arguments: _gameplayController.currentLevelNumber.value,
+                        arguments: _sessionArgumentForLevel(
+                          _outcome.levelNumber,
+                        ),
                       ),
                       icon: const Icon(Icons.replay_rounded),
                       label: const Text('Retry'),
                     ),
                     const SizedBox(height: uiControlGap),
                     OutlinedButton.icon(
-                      onPressed: () => Get.offNamed(AppRoutes.levelMap),
+                      onPressed: () => Get.offNamed(AppRoutes.kingdomMap),
                       icon: const Icon(Icons.map_rounded),
                       label: const Text('Map'),
                     ),
@@ -122,5 +146,45 @@ class _LoseOverlayState extends State<LoseOverlay>
       return;
     }
     await _promptController.forward();
+  }
+
+  Object _sessionArgumentForLevel(int levelNumber) {
+    if (Get.isRegistered<KingdomMapController>()) {
+      try {
+        return GameplaySession.fromLevel(
+          level: Get.find<KingdomMapController>().levelByNumber(levelNumber),
+          selectedPreGameBoosters: const [],
+        );
+      } on RangeError {
+        return levelNumber;
+      }
+    }
+    return levelNumber;
+  }
+
+  GameplayOutcome _outcomeFromArguments(Object? arguments) {
+    if (arguments is GameplayOutcome) {
+      return arguments;
+    }
+    final controllerOutcome = _gameplayController.gameplayOutcome.value;
+    if (controllerOutcome != null) {
+      return controllerOutcome;
+    }
+    return GameplayOutcome(
+      didWin: false,
+      levelId: _gameplayController.levelId.value,
+      levelNumber: _gameplayController.currentLevelNumber.value,
+      kingdomName: _gameplayController.kingdomName.value,
+      goalLabel: _gameplayController.goalLabel.value,
+      goalRemainingLabel: _gameplayController.goalLabel.value,
+      score: _gameplayController.score.value,
+      bestScore: _gameplayController.score.value,
+      stars: 0,
+      bestStars: 0,
+      movesRemaining: _gameplayController.movesRemaining.value,
+      rewardLabel: '',
+      rewardBoosterType: null,
+      saveStatusLabel: '',
+    );
   }
 }

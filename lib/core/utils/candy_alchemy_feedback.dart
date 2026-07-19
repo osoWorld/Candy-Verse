@@ -10,6 +10,7 @@ enum CandyAlchemySoundCue {
   standardMatch,
   temperedShatter,
   tempoMeterFull,
+  boosterActivation,
   architectTile,
   levelComplete,
 }
@@ -25,6 +26,9 @@ abstract class CandyAlchemyFeedback {
   /// Plays the Tempo Meter full cue and soft haptic.
   void playTempoMeterFull();
 
+  /// Plays a generic booster activation cue and haptic.
+  void playBoosterActivation();
+
   /// Plays the Architect Tile mechanical shift cue.
   void playArchitectTile();
 
@@ -38,19 +42,31 @@ abstract class CandyAlchemyFeedback {
 /// Platform feedback implementation with optional just_audio asset cues.
 class PlatformCandyAlchemyFeedback implements CandyAlchemyFeedback {
   /// Creates platform feedback with optional [assetPaths] keyed by cue.
-  PlatformCandyAlchemyFeedback({Map<CandyAlchemySoundCue, String>? assetPaths})
-    : assetPaths = Map<CandyAlchemySoundCue, String>.unmodifiable(
-        assetPaths ?? const {},
-      );
+  PlatformCandyAlchemyFeedback({
+    Map<CandyAlchemySoundCue, String>? assetPaths,
+    this.soundEnabledProvider,
+    this.hapticsEnabledProvider,
+  }) : assetPaths = Map<CandyAlchemySoundCue, String>.unmodifiable(
+         assetPaths ?? const {},
+       );
 
   /// Asset paths for sound cues when bundled audio assets exist.
   final Map<CandyAlchemySoundCue, String> assetPaths;
+
+  /// Returns whether sound feedback is enabled.
+  final bool Function()? soundEnabledProvider;
+
+  /// Returns whether haptic feedback is enabled.
+  final bool Function()? hapticsEnabledProvider;
 
   final Map<CandyAlchemySoundCue, AudioPlayer> _players = {};
 
   /// Plays the standard match chime for [cascadeStepIndex].
   @override
   void playStandardMatch({required int cascadeStepIndex}) {
+    if (!_soundEnabled) {
+      return;
+    }
     final wrappedStep = cascadeStepIndex % standardMatchPitchResetStepCount;
     final playbackSpeed =
         standardMatchBasePlaybackSpeed +
@@ -67,27 +83,35 @@ class PlatformCandyAlchemyFeedback implements CandyAlchemyFeedback {
   @override
   void playTemperedShatter() {
     unawaited(_playCue(CandyAlchemySoundCue.temperedShatter));
-    unawaited(HapticFeedback.mediumImpact());
+    _triggerHaptic(HapticFeedback.mediumImpact);
   }
 
   /// Plays the Tempo Meter full cue and soft haptic.
   @override
   void playTempoMeterFull() {
     unawaited(_playCue(CandyAlchemySoundCue.tempoMeterFull));
-    unawaited(HapticFeedback.lightImpact());
+    _triggerHaptic(HapticFeedback.lightImpact);
+  }
+
+  /// Plays a generic booster activation cue and haptic.
+  @override
+  void playBoosterActivation() {
+    unawaited(_playCue(CandyAlchemySoundCue.boosterActivation));
+    _triggerHaptic(HapticFeedback.mediumImpact);
   }
 
   /// Plays the Architect Tile mechanical shift cue.
   @override
   void playArchitectTile() {
     unawaited(_playCue(CandyAlchemySoundCue.architectTile));
+    _triggerHaptic(HapticFeedback.mediumImpact);
   }
 
   /// Plays level-complete feedback.
   @override
   void playLevelComplete() {
     unawaited(_playCue(CandyAlchemySoundCue.levelComplete));
-    unawaited(HapticFeedback.mediumImpact());
+    _triggerHaptic(HapticFeedback.mediumImpact);
   }
 
   /// Releases just_audio players.
@@ -103,6 +127,9 @@ class PlatformCandyAlchemyFeedback implements CandyAlchemyFeedback {
     CandyAlchemySoundCue cue, {
     double playbackSpeed = standardMatchBasePlaybackSpeed,
   }) async {
+    if (!_soundEnabled) {
+      return;
+    }
     final assetPath = assetPaths[cue];
     if (assetPath == null) {
       await SystemSound.play(SystemSoundType.click);
@@ -114,5 +141,16 @@ class PlatformCandyAlchemyFeedback implements CandyAlchemyFeedback {
     await player.setSpeed(playbackSpeed);
     await player.seek(Duration.zero);
     await player.play();
+  }
+
+  bool get _soundEnabled => soundEnabledProvider?.call() ?? true;
+
+  bool get _hapticsEnabled => hapticsEnabledProvider?.call() ?? true;
+
+  void _triggerHaptic(Future<void> Function() hapticAction) {
+    if (!_hapticsEnabled) {
+      return;
+    }
+    unawaited(hapticAction());
   }
 }

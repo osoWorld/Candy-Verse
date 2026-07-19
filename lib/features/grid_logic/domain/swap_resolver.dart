@@ -42,6 +42,27 @@ class SwapResolver {
     }
 
     final swappedGrid = grid.swapTiles(first, second);
+    final firstSwappedTile = swappedGrid.tileAt(second);
+    final secondSwappedTile = swappedGrid.tileAt(first);
+    final specialActivationOrigin = firstSwappedTile?.isSpecial == true
+        ? second
+        : secondSwappedTile?.isSpecial == true
+        ? first
+        : null;
+    if (specialActivationOrigin != null) {
+      return SwapResult.accepted(
+        first: first,
+        second: second,
+        swappedGrid: swappedGrid,
+        matches: const [],
+        cascadeResult: cascadeResolver.resolveSpecialActivation(
+          grid: swappedGrid,
+          origin: specialActivationOrigin,
+          target: specialActivationOrigin == first ? second : first,
+        ),
+      );
+    }
+
     final matches = matchDetector.detectMatches(swappedGrid);
     if (matches.isEmpty) {
       return SwapResult.rejected(
@@ -57,7 +78,10 @@ class SwapResolver {
       second: second,
       swappedGrid: swappedGrid,
       matches: matches,
-      cascadeResult: cascadeResolver.resolve(swappedGrid),
+      cascadeResult: cascadeResolver.resolve(
+        swappedGrid,
+        preferredCreationPositions: [first, second],
+      ),
     );
   }
 }

@@ -5,6 +5,7 @@
 alter table player_progress enable row level security;
 alter table purchases enable row level security;
 alter table leaderboards enable row level security;
+alter table booster_inventory enable row level security;
 
 create policy "player_progress_select_own"
 on player_progress for select
@@ -42,5 +43,18 @@ with check (auth.uid() = player_id);
 
 create policy "leaderboards_update_own"
 on leaderboards for update
+using (auth.uid() = player_id)
+with check (auth.uid() = player_id);
+
+create policy "booster_inventory_select_own"
+on booster_inventory for select
+using (auth.uid() = player_id);
+
+create policy "booster_inventory_insert_own"
+on booster_inventory for insert
+with check (auth.uid() = player_id);
+
+create policy "booster_inventory_update_own"
+on booster_inventory for update
 using (auth.uid() = player_id)
 with check (auth.uid() = player_id);

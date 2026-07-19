@@ -1,0 +1,77 @@
+{
+  "levelId": "molten_bakery_level72",
+  "kingdomId": "molten_bakery",
+  "levelNumber": 72,
+  "rows": 9,
+  "columns": 9,
+  "difficulty": "simple",
+  "levelKind": "candyOrder",
+  "goalType": "collectState",
+  "targetValue": 12,
+  "moveLimit": 20,
+  "availableStates": [
+    "none",
+    "molten",
+    "frost",
+    "spice"
+  ],
+  "availablePreGameBoosters": [
+    "fusionBooster",
+    "architectTile",
+    "echoCandy"
+  ],
+  "preLevelBoosters": [
+    "fusionBooster",
+    "architectTile",
+    "echoCandy"
+  ],
+  "boardMask": {},
+  "spawnRules": {
+    "seed": 1072,
+    "baseCandies": [
+      "cocoa",
+      "citrus",
+      "berry",
+      "mint",
+      "cream"
+    ],
+    "reactiveStates": [
+      "none",
+      "molten",
+      "frost",
+      "spice"
+    ]
+  },
+  "blockers": [
+    {
+      "position": "7,3",
+      "type": "spiceCrate",
+      "hitPoints": 3
+    },
+    {
+      "position": "7,4",
+      "type": "spiceCrate",
+      "hitPoints": 3
+    },
+    {
+      "position": "7,5",
+      "type": "spiceCrate",
+      "hitPoints": 3
+    }
+  ],
+  "starThresholds": [
+    15100,
+    16600,
+    18600
+  ],
+  "friendScoreSeed": 91072,
+  "allowStartingMatches": false,
+  "specialCandyRules": {
+    "allowRowClear": true,
+    "allowColumnClear": true,
+    "allowWrapped": true,
+    "allowColorOrb": true,
+    "allowFishCharm": true,
+    "allowAlchemyBomb": true
+  }
+}

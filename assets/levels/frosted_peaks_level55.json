@@ -1,0 +1,125 @@
+{
+  "levelId": "frosted_peaks_level55",
+  "kingdomId": "frosted_peaks",
+  "levelNumber": 55,
+  "rows": 8,
+  "columns": 8,
+  "difficulty": "superHard",
+  "levelKind": "mixed",
+  "goalType": "clearObstacle",
+  "targetValue": 13,
+  "moveLimit": 24,
+  "availableStates": [
+    "none",
+    "frost",
+    "living"
+  ],
+  "availablePreGameBoosters": [
+    "fusionBooster",
+    "architectTile",
+    "echoCandy"
+  ],
+  "preLevelBoosters": [
+    "fusionBooster",
+    "architectTile",
+    "echoCandy"
+  ],
+  "boardMask": {},
+  "spawnRules": {
+    "seed": 1055,
+    "baseCandies": [
+      "cocoa",
+      "citrus",
+      "berry",
+      "mint",
+      "cream"
+    ],
+    "reactiveStates": [
+      "none",
+      "frost",
+      "living"
+    ]
+  },
+  "blockers": [
+    {
+      "position": "3,0",
+      "type": "ice",
+      "hitPoints": 2
+    },
+    {
+      "position": "3,1",
+      "type": "ice",
+      "hitPoints": 2
+    },
+    {
+      "position": "3,2",
+      "type": "ice",
+      "hitPoints": 2
+    },
+    {
+      "position": "3,3",
+      "type": "ice",
+      "hitPoints": 2
+    },
+    {
+      "position": "3,4",
+      "type": "ice",
+      "hitPoints": 2
+    },
+    {
+      "position": "4,1",
+      "type": "ice",
+      "hitPoints": 2
+    },
+    {
+      "position": "4,2",
+      "type": "ice",
+      "hitPoints": 2
+    },
+    {
+      "position": "4,3",
+      "type": "ice",
+      "hitPoints": 2
+    },
+    {
+      "position": "4,4",
+      "type": "ice",
+      "hitPoints": 2
+    },
+    {
+      "position": "4,5",
+      "type": "ice",
+      "hitPoints": 2
+    },
+    {
+      "position": "5,6",
+      "type": "ice",
+      "hitPoints": 2
+    },
+    {
+      "position": "5,7",
+      "type": "ice",
+      "hitPoints": 2
+    },
+    {
+      "position": "6,7",
+      "type": "ice",
+      "hitPoints": 2
+    }
+  ],
+  "starThresholds": [
+    12125,
+    13625,
+    15625
+  ],
+  "friendScoreSeed": 91055,
+  "allowStartingMatches": false,
+  "specialCandyRules": {
+    "allowRowClear": true,
+    "allowColumnClear": true,
+    "allowWrapped": true,
+    "allowColorOrb": true,
+    "allowFishCharm": true,
+    "allowAlchemyBomb": false
+  }
+}

@@ -1,0 +1,137 @@
+{
+  "levelId": "syrup_lagoon_level90",
+  "kingdomId": "syrup_lagoon",
+  "levelNumber": 90,
+  "rows": 9,
+  "columns": 9,
+  "difficulty": "hard",
+  "levelKind": "jelly",
+  "goalType": "clearObstacle",
+  "targetValue": 15,
+  "moveLimit": 24,
+  "availableStates": [
+    "none",
+    "syrup",
+    "living",
+    "spice"
+  ],
+  "availablePreGameBoosters": [
+    "fusionBooster",
+    "architectTile",
+    "echoCandy"
+  ],
+  "preLevelBoosters": [
+    "fusionBooster",
+    "architectTile",
+    "echoCandy"
+  ],
+  "boardMask": {},
+  "spawnRules": {
+    "seed": 1090,
+    "baseCandies": [
+      "cocoa",
+      "citrus",
+      "berry",
+      "mint",
+      "cream"
+    ],
+    "reactiveStates": [
+      "none",
+      "syrup",
+      "living",
+      "spice"
+    ]
+  },
+  "blockers": [
+    {
+      "position": "4,6",
+      "type": "syrupLock",
+      "hitPoints": 1
+    },
+    {
+      "position": "4,7",
+      "type": "syrupLock",
+      "hitPoints": 1
+    },
+    {
+      "position": "5,3",
+      "type": "syrupLock",
+      "hitPoints": 1
+    },
+    {
+      "position": "5,4",
+      "type": "syrupLock",
+      "hitPoints": 1
+    },
+    {
+      "position": "6,0",
+      "type": "syrupLock",
+      "hitPoints": 1
+    },
+    {
+      "position": "6,2",
+      "type": "syrupLock",
+      "hitPoints": 1
+    },
+    {
+      "position": "7,0",
+      "type": "syrupLock",
+      "hitPoints": 1
+    },
+    {
+      "position": "7,1",
+      "type": "syrupLock",
+      "hitPoints": 1
+    },
+    {
+      "position": "7,2",
+      "type": "syrupLock",
+      "hitPoints": 1
+    },
+    {
+      "position": "7,3",
+      "type": "syrupLock",
+      "hitPoints": 1
+    },
+    {
+      "position": "7,4",
+      "type": "syrupLock",
+      "hitPoints": 1
+    },
+    {
+      "position": "7,5",
+      "type": "syrupLock",
+      "hitPoints": 1
+    },
+    {
+      "position": "7,6",
+      "type": "syrupLock",
+      "hitPoints": 1
+    },
+    {
+      "position": "7,7",
+      "type": "syrupLock",
+      "hitPoints": 1
+    },
+    {
+      "position": "7,8",
+      "type": "syrupLock",
+      "hitPoints": 1
+    }
+  ],
+  "starThresholds": [
+    18250,
+    19750,
+    21750
+  ],
+  "friendScoreSeed": 91090,
+  "allowStartingMatches": false,
+  "specialCandyRules": {
+    "allowRowClear": true,
+    "allowColumnClear": true,
+    "allowWrapped": true,
+    "allowColorOrb": true,
+    "allowFishCharm": true,
+    "allowAlchemyBomb": true
+  }
+}

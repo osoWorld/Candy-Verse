@@ -1,0 +1,122 @@
+{
+  "levelId": "molten_bakery_level70",
+  "kingdomId": "molten_bakery",
+  "levelNumber": 70,
+  "rows": 8,
+  "columns": 8,
+  "difficulty": "hard",
+  "levelKind": "jelly",
+  "goalType": "clearObstacle",
+  "targetValue": 12,
+  "moveLimit": 18,
+  "availableStates": [
+    "none",
+    "molten",
+    "frost",
+    "spice"
+  ],
+  "availablePreGameBoosters": [
+    "fusionBooster",
+    "architectTile",
+    "echoCandy"
+  ],
+  "preLevelBoosters": [
+    "fusionBooster",
+    "architectTile",
+    "echoCandy"
+  ],
+  "boardMask": {},
+  "spawnRules": {
+    "seed": 1070,
+    "baseCandies": [
+      "cocoa",
+      "citrus",
+      "berry",
+      "mint",
+      "cream"
+    ],
+    "reactiveStates": [
+      "none",
+      "molten",
+      "frost",
+      "spice"
+    ]
+  },
+  "blockers": [
+    {
+      "position": "3,7",
+      "type": "spiceCrate",
+      "hitPoints": 3
+    },
+    {
+      "position": "4,6",
+      "type": "spiceCrate",
+      "hitPoints": 3
+    },
+    {
+      "position": "4,7",
+      "type": "spiceCrate",
+      "hitPoints": 3
+    },
+    {
+      "position": "5,1",
+      "type": "spiceCrate",
+      "hitPoints": 3
+    },
+    {
+      "position": "5,2",
+      "type": "spiceCrate",
+      "hitPoints": 3
+    },
+    {
+      "position": "5,3",
+      "type": "spiceCrate",
+      "hitPoints": 3
+    },
+    {
+      "position": "5,4",
+      "type": "spiceCrate",
+      "hitPoints": 3
+    },
+    {
+      "position": "5,5",
+      "type": "spiceCrate",
+      "hitPoints": 3
+    },
+    {
+      "position": "6,0",
+      "type": "spiceCrate",
+      "hitPoints": 3
+    },
+    {
+      "position": "6,1",
+      "type": "spiceCrate",
+      "hitPoints": 3
+    },
+    {
+      "position": "6,2",
+      "type": "spiceCrate",
+      "hitPoints": 3
+    },
+    {
+      "position": "6,5",
+      "type": "spiceCrate",
+      "hitPoints": 3
+    }
+  ],
+  "starThresholds": [
+    14750,
+    16250,
+    18250
+  ],
+  "friendScoreSeed": 91070,
+  "allowStartingMatches": false,
+  "specialCandyRules": {
+    "allowRowClear": true,
+    "allowColumnClear": true,
+    "allowWrapped": true,
+    "allowColorOrb": true,
+    "allowFishCharm": true,
+    "allowAlchemyBomb": true
+  }
+}

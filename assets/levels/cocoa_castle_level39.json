@@ -1,0 +1,80 @@
+{
+  "levelId": "cocoa_castle_level39",
+  "kingdomId": "cocoa_castle",
+  "levelNumber": 39,
+  "rows": 8,
+  "columns": 8,
+  "difficulty": "simple",
+  "levelKind": "ingredientDrop",
+  "goalType": "clearObstacle",
+  "targetValue": 4,
+  "moveLimit": 22,
+  "availableStates": [
+    "none",
+    "living",
+    "syrup"
+  ],
+  "availablePreGameBoosters": [
+    "fusionBooster",
+    "architectTile",
+    "echoCandy"
+  ],
+  "preLevelBoosters": [
+    "fusionBooster",
+    "architectTile",
+    "echoCandy"
+  ],
+  "boardMask": {},
+  "spawnRules": {
+    "seed": 1039,
+    "baseCandies": [
+      "cocoa",
+      "citrus",
+      "berry",
+      "mint",
+      "cream"
+    ],
+    "reactiveStates": [
+      "none",
+      "living",
+      "syrup"
+    ]
+  },
+  "blockers": [
+    {
+      "position": "4,3",
+      "type": "wafer",
+      "hitPoints": 2
+    },
+    {
+      "position": "5,6",
+      "type": "wafer",
+      "hitPoints": 2
+    },
+    {
+      "position": "7,3",
+      "type": "wafer",
+      "hitPoints": 2
+    },
+    {
+      "position": "7,4",
+      "type": "wafer",
+      "hitPoints": 2
+    }
+  ],
+  "starThresholds": [
+    9325,
+    10825,
+    12825
+  ],
+  "friendScoreSeed": 91039,
+  "allowStartingMatches": false,
+  "specialCandyRules": {
+    "allowRowClear": true,
+    "allowColumnClear": true,
+    "allowWrapped": true,
+    "allowColorOrb": true,
+    "allowFishCharm": true,
+    "allowAlchemyBomb": false
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "kingdomId": "syrup_lagoon",
+  "name": "Syrup Lagoon",
+  "levelStart": 81,
+  "levelEnd": 100,
+  "palette": {
+    "sky": "#35D0C3",
+    "ground": "#6B4DFF",
+    "accent": "#FF7AC8"
+  },
+  "story": {
+    "intro": "The Syrup Sprite guides Pip through gummy islands where every ripple carries a Living candy secret.",
+    "outro": "The lagoon settles into a bright alchemy mirror, reflecting every kingdom Pip helped restore."
+  },
+  "characters": [
+    "Syrup Sprite"
+  ],
+  "mapMotifs": [
+    "syrupLagoon",
+    "gummyIsland",
+    "mirrorWater"
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "kingdomId": "frosted_peaks",
+  "name": "Frosted Peaks",
+  "levelStart": 41,
+  "levelEnd": 60,
+  "palette": {
+    "sky": "#B9F3FF",
+    "ground": "#EAFBFF",
+    "accent": "#4A9DFF"
+  },
+  "story": {
+    "intro": "Queen Glacia asks Pip to calm the crystal blizzards before Frost candies seal the passes shut.",
+    "outro": "The peaks shine clear, and a hidden warm trail glows beneath the snow."
+  },
+  "characters": [
+    "Queen Glacia"
+  ],
+  "mapMotifs": [
+    "frostedPeaks",
+    "crystalBridge",
+    "snowPath"
+  ]
+}

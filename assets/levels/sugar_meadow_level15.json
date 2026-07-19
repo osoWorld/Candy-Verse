@@ -1,0 +1,133 @@
+{
+  "levelId": "sugar_meadow_level15",
+  "kingdomId": "sugar_meadow",
+  "levelNumber": 15,
+  "rows": 7,
+  "columns": 7,
+  "difficulty": "superHard",
+  "levelKind": "jelly",
+  "goalType": "clearObstacle",
+  "targetValue": 15,
+  "moveLimit": 19,
+  "availableStates": [
+    "none",
+    "living"
+  ],
+  "availablePreGameBoosters": [
+    "fusionBooster",
+    "architectTile",
+    "echoCandy"
+  ],
+  "preLevelBoosters": [
+    "fusionBooster",
+    "architectTile",
+    "echoCandy"
+  ],
+  "boardMask": {},
+  "spawnRules": {
+    "seed": 1015,
+    "baseCandies": [
+      "cocoa",
+      "citrus",
+      "berry",
+      "mint",
+      "cream"
+    ],
+    "reactiveStates": [
+      "none",
+      "living"
+    ]
+  },
+  "blockers": [
+    {
+      "position": "1,0",
+      "type": "wafer",
+      "hitPoints": 2
+    },
+    {
+      "position": "1,1",
+      "type": "wafer",
+      "hitPoints": 2
+    },
+    {
+      "position": "1,2",
+      "type": "wafer",
+      "hitPoints": 2
+    },
+    {
+      "position": "1,3",
+      "type": "wafer",
+      "hitPoints": 2
+    },
+    {
+      "position": "1,4",
+      "type": "wafer",
+      "hitPoints": 2
+    },
+    {
+      "position": "1,5",
+      "type": "wafer",
+      "hitPoints": 2
+    },
+    {
+      "position": "1,6",
+      "type": "wafer",
+      "hitPoints": 2
+    },
+    {
+      "position": "2,0",
+      "type": "wafer",
+      "hitPoints": 2
+    },
+    {
+      "position": "2,1",
+      "type": "wafer",
+      "hitPoints": 2
+    },
+    {
+      "position": "2,2",
+      "type": "wafer",
+      "hitPoints": 2
+    },
+    {
+      "position": "2,3",
+      "type": "wafer",
+      "hitPoints": 2
+    },
+    {
+      "position": "2,4",
+      "type": "wafer",
+      "hitPoints": 2
+    },
+    {
+      "position": "2,5",
+      "type": "wafer",
+      "hitPoints": 2
+    },
+    {
+      "position": "2,6",
+      "type": "wafer",
+      "hitPoints": 2
+    },
+    {
+      "position": "5,0",
+      "type": "wafer",
+      "hitPoints": 2
+    }
+  ],
+  "starThresholds": [
+    5125,
+    6625,
+    8625
+  ],
+  "friendScoreSeed": 91015,
+  "allowStartingMatches": false,
+  "specialCandyRules": {
+    "allowRowClear": true,
+    "allowColumnClear": true,
+    "allowWrapped": true,
+    "allowColorOrb": false,
+    "allowFishCharm": false,
+    "allowAlchemyBomb": false
+  }
+}

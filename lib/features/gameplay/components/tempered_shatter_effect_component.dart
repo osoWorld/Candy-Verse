@@ -19,6 +19,7 @@ class TemperedShatterEffectComponent extends PositionComponent {
     required this.tileSize,
     required this.tileGap,
     required Vector2 size,
+    this.reduceMotion = false,
   }) : triggerPositions = List<GridPosition>.unmodifiable(triggerPositions),
        clearedPositions = List<GridPosition>.unmodifiable(clearedPositions),
        _paint = Paint(),
@@ -45,6 +46,9 @@ class TemperedShatterEffectComponent extends PositionComponent {
   /// Logical tile gap used by BoardComponent.
   final double tileGap;
 
+  /// Whether intense flash and particle motion should be reduced.
+  final bool reduceMotion;
+
   final Paint _paint;
   final List<_TemperedShatterShardSpec> _shards;
   final Completer<void> _completed = Completer<void>();
@@ -60,7 +64,10 @@ class TemperedShatterEffectComponent extends PositionComponent {
 
     // ARCHITECTURE.md §9 — update only elapsed time; shard slots are pooled.
     _elapsedSeconds += dt;
-    if (_elapsedSeconds >= temperedShatterTotalDurationSeconds) {
+    final totalDuration = reduceMotion
+        ? temperedShatterAnticipationDurationSeconds
+        : temperedShatterTotalDurationSeconds;
+    if (_elapsedSeconds >= totalDuration) {
       if (!_completed.isCompleted) {
         _completed.complete();
       }
@@ -75,6 +82,10 @@ class TemperedShatterEffectComponent extends PositionComponent {
 
     // DESIGN.md §5 — 150ms anticipation flash.
     _renderAnticipationFlash(canvas);
+
+    if (reduceMotion) {
+      return;
+    }
 
     // DESIGN.md §5 — 120ms crack line between trigger locations.
     _renderCrackSweep(canvas);
@@ -170,14 +181,17 @@ class TemperedShatterEffectComponent extends PositionComponent {
   double _anticipationOpacity() {
     if (_elapsedSeconds <= temperedShatterFlashInDurationSeconds) {
       final progress = _elapsedSeconds / temperedShatterFlashInDurationSeconds;
-      return Curves.easeIn.transform(progress.clamp(0.0, 1.0)) * 0.75;
+      return Curves.easeIn.transform(progress.clamp(0.0, 1.0)) *
+          _anticipationOpacityScale;
     }
 
     final outElapsed = _elapsedSeconds - temperedShatterFlashInDurationSeconds;
     final progress = (outElapsed / temperedShatterFlashOutDurationSeconds)
         .clamp(0.0, 1.0);
-    return (1 - progress) * 0.75;
+    return (1 - progress) * _anticipationOpacityScale;
   }
+
+  double get _anticipationOpacityScale => reduceMotion ? 0.3 : 0.75;
 
   Rect _tileRect(GridPosition position) {
     return Rect.fromLTWH(

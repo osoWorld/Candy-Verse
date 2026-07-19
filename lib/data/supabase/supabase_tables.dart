@@ -15,6 +15,11 @@ abstract final class SupabaseTables {
   /// Source: ARCHITECTURE.md §10 — purchases schema.
   static const String purchases = 'purchases';
 
+  /// Booster inventory table.
+  ///
+  /// Source: ARCHITECTURE.md section 12 - booster_inventory schema.
+  static const String boosterInventory = 'booster_inventory';
+
   /// Levels table.
   ///
   /// Source: ARCHITECTURE.md §10 — levels schema.

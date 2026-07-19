@@ -1,0 +1,23 @@
+{
+  "kingdomId": "cocoa_castle",
+  "name": "Cocoa Castle",
+  "levelStart": 21,
+  "levelEnd": 40,
+  "palette": {
+    "sky": "#9B5A34",
+    "ground": "#F2C36B",
+    "accent": "#5A2B1A"
+  },
+  "story": {
+    "intro": "Baron Cocoa locks the castle pantry behind wafer gates, daring Pip to prove the recipes still belong to everyone.",
+    "outro": "The cocoa drawbridge lowers with a warm creak, sending the expedition toward the frozen road."
+  },
+  "characters": [
+    "Baron Cocoa"
+  ],
+  "mapMotifs": [
+    "cocoaCastle",
+    "waferGate",
+    "chocolateDrawbridge"
+  ]
+}

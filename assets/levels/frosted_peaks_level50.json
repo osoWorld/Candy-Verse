@@ -1,0 +1,120 @@
+{
+  "levelId": "frosted_peaks_level50",
+  "kingdomId": "frosted_peaks",
+  "levelNumber": 50,
+  "rows": 8,
+  "columns": 8,
+  "difficulty": "hard",
+  "levelKind": "jelly",
+  "goalType": "clearObstacle",
+  "targetValue": 12,
+  "moveLimit": 19,
+  "availableStates": [
+    "none",
+    "frost",
+    "living"
+  ],
+  "availablePreGameBoosters": [
+    "fusionBooster",
+    "architectTile",
+    "echoCandy"
+  ],
+  "preLevelBoosters": [
+    "fusionBooster",
+    "architectTile",
+    "echoCandy"
+  ],
+  "boardMask": {},
+  "spawnRules": {
+    "seed": 1050,
+    "baseCandies": [
+      "cocoa",
+      "citrus",
+      "berry",
+      "mint",
+      "cream"
+    ],
+    "reactiveStates": [
+      "none",
+      "frost",
+      "living"
+    ]
+  },
+  "blockers": [
+    {
+      "position": "3,6",
+      "type": "ice",
+      "hitPoints": 2
+    },
+    {
+      "position": "3,7",
+      "type": "ice",
+      "hitPoints": 2
+    },
+    {
+      "position": "5,0",
+      "type": "ice",
+      "hitPoints": 2
+    },
+    {
+      "position": "5,1",
+      "type": "ice",
+      "hitPoints": 2
+    },
+    {
+      "position": "5,2",
+      "type": "ice",
+      "hitPoints": 2
+    },
+    {
+      "position": "5,3",
+      "type": "ice",
+      "hitPoints": 2
+    },
+    {
+      "position": "5,5",
+      "type": "ice",
+      "hitPoints": 2
+    },
+    {
+      "position": "6,1",
+      "type": "ice",
+      "hitPoints": 2
+    },
+    {
+      "position": "6,2",
+      "type": "ice",
+      "hitPoints": 2
+    },
+    {
+      "position": "6,3",
+      "type": "ice",
+      "hitPoints": 2
+    },
+    {
+      "position": "6,4",
+      "type": "ice",
+      "hitPoints": 2
+    },
+    {
+      "position": "6,5",
+      "type": "ice",
+      "hitPoints": 2
+    }
+  ],
+  "starThresholds": [
+    11250,
+    12750,
+    14750
+  ],
+  "friendScoreSeed": 91050,
+  "allowStartingMatches": false,
+  "specialCandyRules": {
+    "allowRowClear": true,
+    "allowColumnClear": true,
+    "allowWrapped": true,
+    "allowColorOrb": true,
+    "allowFishCharm": true,
+    "allowAlchemyBomb": false
+  }
+}

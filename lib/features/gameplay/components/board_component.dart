@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 import 'dart:ui';
 
@@ -8,18 +9,29 @@ import 'package:flutter/animation.dart';
 
 import '../../../core/constants/gameplay_layout_constants.dart';
 import '../../../core/theme/candy_alchemy_colors.dart';
+import '../../boosters/domain/architect_tile.dart';
+import '../../boosters/domain/booster_type.dart';
+import '../../boosters/domain/echo_candy.dart';
+import '../../boosters/domain/fusion_booster.dart';
+import '../../boosters/domain/special_candy_type.dart' as booster_special;
+import '../../grid_logic/domain/entities/cascade_result.dart';
 import '../../grid_logic/domain/cascade_resolver.dart';
+import '../../grid_logic/domain/entities/blocker_stack.dart';
+import '../../grid_logic/domain/entities/blocker_type.dart';
 import '../../grid_logic/domain/entities/cascade_step_result.dart';
 import '../../grid_logic/domain/entities/grid_position.dart';
 import '../../grid_logic/domain/entities/grid_state.dart';
 import '../../grid_logic/domain/entities/reaction_effect.dart';
 import '../../grid_logic/domain/entities/reactive_state.dart';
-import '../../grid_logic/domain/entities/swap_result.dart';
+import '../../grid_logic/domain/entities/special_candy_type.dart'
+    as grid_special;
 import '../../grid_logic/domain/match_detector.dart';
 import '../../grid_logic/domain/swap_resolver.dart';
 import '../game/tempered_shatter_sound_hook.dart';
+import 'combo_label_component.dart';
 import 'particle_effects.dart';
 import 'reactive_state_decal_component.dart';
+import 'special_candy_effect_component.dart';
 import 'tempered_shatter_effect_component.dart';
 import 'tile_component.dart';
 
@@ -32,9 +44,19 @@ class BoardComponent extends PositionComponent
     required this.tileSize,
     required this.tileGap,
     SwapResolver? swapResolver,
+    CascadeResolver? cascadeResolver,
+    FusionBooster? fusionBooster,
+    ArchitectTile? architectTile,
+    EchoCandy? echoCandy,
     TemperedShatterSoundHook? temperedShatterSoundHook,
     this.onAcceptedSwap,
     this.onCascadeStepClear,
+    this.onCascadeStepResolved,
+    this.onCascadeSettled,
+    this.isInputEnabledProvider,
+    this.selectedBoosterProvider,
+    this.onBoosterActivated,
+    this.reduceMotionProvider,
   }) : _gridState = gridState,
        _swapResolver =
            swapResolver ??
@@ -42,13 +64,23 @@ class BoardComponent extends PositionComponent
              matchDetector: MatchDetector(),
              cascadeResolver: CascadeResolver(matchDetector: MatchDetector()),
            ),
+       _cascadeResolver =
+           cascadeResolver ?? CascadeResolver(matchDetector: MatchDetector()),
+       _fusionBooster = fusionBooster ?? const FusionBooster(),
+       _architectTile = architectTile ?? const ArchitectTile(),
+       _echoCandy = echoCandy ?? const EchoCandy(),
        _temperedShatterSoundHook =
            temperedShatterSoundHook ?? TemperedShatterSoundHook(),
        _trayPaint = Paint()..color = CandyAlchemyColors.boardTray,
        _trayBorderPaint = Paint()
          ..color = CandyAlchemyColors.boardTrayBorder
          ..style = PaintingStyle.stroke
-         ..strokeWidth = staticTileStrokeWidth,
+         ..strokeWidth = staticTileStrokeWidth * 1.5,
+       _cellPaint = Paint()..color = CandyAlchemyColors.boardCell,
+       _cellHighlightPaint = Paint()
+         ..color = CandyAlchemyColors.boardCellHighlight
+         ..style = PaintingStyle.stroke
+         ..strokeWidth = 1.2,
        super(
          size: Vector2(
            staticBoardPadding * 2 +
@@ -70,16 +102,55 @@ class BoardComponent extends PositionComponent
   /// Logical gap between rendered tiles.
   final double tileGap;
 
+  /// Updates the board component size after responsive layout changes.
+  ///
+  /// Inputs: none. Output: none. Side effects: updates Flame component size.
+  void refreshSizeFromGrid() {
+    size = Vector2(
+      staticBoardPadding * 2 +
+          _gridState.columns * tileSize +
+          (_gridState.columns - 1) * tileGap,
+      staticBoardPadding * 2 +
+          _gridState.rows * tileSize +
+          (_gridState.rows - 1) * tileGap,
+    );
+  }
+
   /// Callback invoked after the pure logic layer accepts a swap.
   final void Function()? onAcceptedSwap;
 
   /// Callback invoked before each Cascade Step clear animation.
   final void Function(int cascadeStepIndex)? onCascadeStepClear;
 
+  /// Callback invoked with the full Cascade Step payload for scoring/goals.
+  final void Function(int cascadeStepIndex, CascadeStepResult cascadeStep)?
+  onCascadeStepResolved;
+
+  /// Callback invoked after the board has finished resolving cascades.
+  final void Function()? onCascadeSettled;
+
+  /// Returns whether board gestures should currently be accepted.
+  final bool Function()? isInputEnabledProvider;
+
+  /// Returns a selected booster when the next tap should target the board.
+  final BoosterType? Function()? selectedBoosterProvider;
+
+  /// Callback invoked after a booster successfully changes the board.
+  final bool Function(BoosterType boosterType)? onBoosterActivated;
+
+  /// Returns whether intense gameplay motion should be reduced.
+  final bool Function()? reduceMotionProvider;
+
   final SwapResolver _swapResolver;
+  final CascadeResolver _cascadeResolver;
+  final FusionBooster _fusionBooster;
+  final ArchitectTile _architectTile;
+  final EchoCandy _echoCandy;
   final TemperedShatterSoundHook _temperedShatterSoundHook;
   final Paint _trayPaint;
   final Paint _trayBorderPaint;
+  final Paint _cellPaint;
+  final Paint _cellHighlightPaint;
   final Map<GridPosition, TileComponent> _tileComponents = {};
   final List<ParticleEffects> _particleEffectPool = [];
   final Vector2 _shakeBasePosition = Vector2.zero();
@@ -90,6 +161,7 @@ class BoardComponent extends PositionComponent
   var _dragDeltaY = 0.0;
   var _shakeElapsedSeconds = 0.0;
   var _isShaking = false;
+  CascadeStepResult? _lastCascadeStep;
 
   /// Adds one TileComponent child for each non-empty GridState cell.
   @override
@@ -104,6 +176,11 @@ class BoardComponent extends PositionComponent
     super.update(dt);
 
     if (!_isShaking) {
+      return;
+    }
+    if (_reduceMotionEnabled) {
+      position.setFrom(_shakeBasePosition);
+      _isShaking = false;
       return;
     }
 
@@ -129,12 +206,20 @@ class BoardComponent extends PositionComponent
   /// Handles tap selection and tap-to-swap between adjacent tiles.
   @override
   void onTapDown(TapDownEvent event) {
-    if (_interactionState != _BoardInteractionState.idle) {
+    if (!_isInputEnabled() ||
+        _interactionState != _BoardInteractionState.idle) {
       return;
     }
     final gridPosition = _gridPositionFromLocal(event.localPosition);
     if (gridPosition == null) {
       _clearSelectedPosition();
+      return;
+    }
+
+    final selectedBooster = selectedBoosterProvider?.call();
+    if (selectedBooster != null) {
+      _clearSelectedPosition();
+      unawaited(_activateSelectedBooster(selectedBooster, gridPosition));
       return;
     }
     _handleTappedGridPosition(gridPosition);
@@ -144,7 +229,11 @@ class BoardComponent extends PositionComponent
   @override
   void onDragStart(DragStartEvent event) {
     super.onDragStart(event);
-    if (_interactionState != _BoardInteractionState.idle) {
+    if (!_isInputEnabled() ||
+        _interactionState != _BoardInteractionState.idle) {
+      return;
+    }
+    if (selectedBoosterProvider?.call() != null) {
       return;
     }
     _dragStartPosition = _gridPositionFromLocal(event.localPosition);
@@ -156,6 +245,7 @@ class BoardComponent extends PositionComponent
   @override
   void onDragUpdate(DragUpdateEvent event) {
     if (_interactionState != _BoardInteractionState.idle ||
+        !_isInputEnabled() ||
         _dragStartPosition == null) {
       return;
     }
@@ -193,10 +283,187 @@ class BoardComponent extends PositionComponent
       const Radius.circular(staticBoardCornerRadius),
     );
 
-    // Step 5: gestures and animation live here; game rules stay in domain.
+    // DESIGN.md section 6: playful purple tray with visible candy cells.
     canvas.drawRRect(trayRRect, _trayPaint);
+    _drawBoardCells(canvas);
     canvas.drawRRect(trayRRect, _trayBorderPaint);
     super.render(canvas);
+    _drawBlockers(canvas);
+  }
+
+  void _drawBoardCells(Canvas canvas) {
+    for (var row = 0; row < _gridState.rows; row += 1) {
+      for (var column = 0; column < _gridState.columns; column += 1) {
+        final gridPosition = GridPosition(row: row, column: column);
+        if (!_gridState.isPlayable(gridPosition)) {
+          continue;
+        }
+        final cellRect = Rect.fromLTWH(
+          staticBoardPadding + column * (tileSize + tileGap),
+          staticBoardPadding + row * (tileSize + tileGap),
+          tileSize,
+          tileSize,
+        ).deflate(tileSize * 0.04);
+        final cellRRect = RRect.fromRectAndRadius(
+          cellRect,
+          Radius.circular(tileSize * 0.16),
+        );
+        canvas
+          ..drawRRect(cellRRect, _cellPaint)
+          ..drawArc(
+            cellRect.deflate(tileSize * 0.12),
+            3.9,
+            1.1,
+            false,
+            _cellHighlightPaint,
+          );
+      }
+    }
+  }
+
+  void _drawBlockers(Canvas canvas) {
+    for (final entry in _gridState.blockers.entries) {
+      _drawBlocker(canvas, entry.key, entry.value);
+    }
+  }
+
+  void _drawBlocker(
+    Canvas canvas,
+    GridPosition gridPosition,
+    BlockerStack blocker,
+  ) {
+    final rect = _rectForGridPosition(gridPosition).deflate(tileSize * 0.1);
+    final fillPaint = Paint()..color = _blockerColorFor(blocker.blockerType);
+    final strokePaint = Paint()
+      ..color = CandyAlchemyColors.blockerStroke
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = math.max(1.0, tileSize * 0.035);
+    final rRect = RRect.fromRectAndRadius(
+      rect,
+      Radius.circular(tileSize * 0.14),
+    );
+
+    // DESIGN.md section 7: blockers overlay the candy with distinct silhouettes.
+    switch (blocker.blockerType) {
+      case BlockerType.chocolate:
+        canvas.drawRRect(rRect, fillPaint);
+        _drawChocolateBlockerGrooves(canvas, rect, strokePaint);
+      case BlockerType.ice:
+        _drawIceBlocker(canvas, rect, fillPaint, strokePaint);
+      case BlockerType.wafer:
+        canvas.drawRRect(rRect, fillPaint);
+        _drawWaferBlockerStripes(canvas, rect, strokePaint);
+      case BlockerType.syrupLock:
+        canvas.drawRRect(rRect, fillPaint);
+        _drawSyrupLock(canvas, rect, strokePaint);
+      case BlockerType.spiceCrate:
+        canvas.drawRRect(rRect, fillPaint);
+        _drawSpiceCrateCross(canvas, rect, strokePaint);
+    }
+    canvas.drawRRect(rRect, strokePaint);
+    _drawBlockerHitPips(canvas, rect, blocker.hitPoints);
+  }
+
+  void _drawChocolateBlockerGrooves(
+    Canvas canvas,
+    Rect rect,
+    Paint strokePaint,
+  ) {
+    canvas
+      ..drawLine(
+        Offset(rect.left + rect.width * 0.5, rect.top),
+        Offset(rect.left + rect.width * 0.5, rect.bottom),
+        strokePaint,
+      )
+      ..drawLine(
+        Offset(rect.left, rect.top + rect.height * 0.5),
+        Offset(rect.right, rect.top + rect.height * 0.5),
+        strokePaint,
+      );
+  }
+
+  void _drawIceBlocker(
+    Canvas canvas,
+    Rect rect,
+    Paint fillPaint,
+    Paint strokePaint,
+  ) {
+    final path = Path()
+      ..moveTo(rect.center.dx, rect.top)
+      ..lineTo(rect.right, rect.center.dy)
+      ..lineTo(rect.center.dx, rect.bottom)
+      ..lineTo(rect.left, rect.center.dy)
+      ..close();
+    canvas
+      ..drawPath(path, fillPaint)
+      ..drawPath(path, strokePaint)
+      ..drawLine(rect.topLeft, rect.bottomRight, strokePaint)
+      ..drawLine(rect.topRight, rect.bottomLeft, strokePaint);
+  }
+
+  void _drawWaferBlockerStripes(Canvas canvas, Rect rect, Paint strokePaint) {
+    for (var index = 1; index <= 2; index += 1) {
+      final x = rect.left + rect.width * index / 3;
+      final y = rect.top + rect.height * index / 3;
+      canvas
+        ..drawLine(Offset(x, rect.top), Offset(x, rect.bottom), strokePaint)
+        ..drawLine(Offset(rect.left, y), Offset(rect.right, y), strokePaint);
+    }
+  }
+
+  void _drawSyrupLock(Canvas canvas, Rect rect, Paint strokePaint) {
+    final shackleRect = Rect.fromCenter(
+      center: Offset(rect.center.dx, rect.top + rect.height * 0.36),
+      width: rect.width * 0.42,
+      height: rect.height * 0.42,
+    );
+    final bodyRect = Rect.fromCenter(
+      center: Offset(rect.center.dx, rect.top + rect.height * 0.62),
+      width: rect.width * 0.52,
+      height: rect.height * 0.38,
+    );
+    canvas
+      ..drawArc(shackleRect, math.pi, math.pi, false, strokePaint)
+      ..drawRRect(
+        RRect.fromRectAndRadius(bodyRect, Radius.circular(tileSize * 0.08)),
+        strokePaint,
+      );
+  }
+
+  void _drawSpiceCrateCross(Canvas canvas, Rect rect, Paint strokePaint) {
+    canvas
+      ..drawLine(rect.topLeft, rect.bottomRight, strokePaint)
+      ..drawLine(rect.topRight, rect.bottomLeft, strokePaint)
+      ..drawLine(
+        Offset(rect.left, rect.top + rect.height * 0.5),
+        Offset(rect.right, rect.top + rect.height * 0.5),
+        strokePaint,
+      );
+  }
+
+  void _drawBlockerHitPips(Canvas canvas, Rect rect, int hitPoints) {
+    final pipPaint = Paint()..color = CandyAlchemyColors.blockerStroke;
+    final radius = math.max(1.2, tileSize * 0.035);
+    for (var index = 0; index < hitPoints; index += 1) {
+      canvas.drawCircle(
+        Offset(
+          rect.right - radius * (2.2 + index * 2.4),
+          rect.bottom - radius * 2.2,
+        ),
+        radius,
+        pipPaint,
+      );
+    }
+  }
+
+  Color _blockerColorFor(BlockerType blockerType) {
+    return switch (blockerType) {
+      BlockerType.chocolate => CandyAlchemyColors.chocolateBlocker,
+      BlockerType.ice => CandyAlchemyColors.iceBlocker,
+      BlockerType.wafer => CandyAlchemyColors.waferBlocker,
+      BlockerType.syrupLock => CandyAlchemyColors.syrupLockBlocker,
+      BlockerType.spiceCrate => CandyAlchemyColors.spiceCrateBlocker,
+    };
   }
 
   Future<void> _rebuildTileComponents() async {
@@ -239,8 +506,78 @@ class BoardComponent extends PositionComponent
     _setSelectedPosition(gridPosition);
   }
 
+  Future<void> _activateSelectedBooster(
+    BoosterType boosterType,
+    GridPosition origin,
+  ) async {
+    if (_interactionState != _BoardInteractionState.idle) {
+      return;
+    }
+    if (!_isInputEnabled()) {
+      return;
+    }
+    if (!_gridState.contains(origin) || _gridState.tileAt(origin) == null) {
+      return;
+    }
+
+    _interactionState = _BoardInteractionState.clearing;
+    final didActivate = switch (boosterType) {
+      BoosterType.fusionBooster => await _activateFusionBooster(origin),
+      BoosterType.architectTile => await _activateArchitectTile(origin),
+      BoosterType.echoCandy => await _activateEchoCandy(),
+      BoosterType.tempoMeter => false,
+    };
+    if (didActivate) {
+      onBoosterActivated?.call(boosterType);
+    }
+    _interactionState = _BoardInteractionState.idle;
+  }
+
+  Future<bool> _activateFusionBooster(GridPosition origin) async {
+    final activation = _fusionBooster.activate(
+      grid: _gridState,
+      origin: origin,
+      firstSpecialCandyType: booster_special.SpecialCandyType.rowClear,
+      secondSpecialCandyType: booster_special.SpecialCandyType.columnClear,
+    );
+    await _playBoosterClearThenCascade(activation.affectedPositions);
+    return true;
+  }
+
+  Future<bool> _activateArchitectTile(GridPosition origin) async {
+    try {
+      final activation = _architectTile.rotateSectionClockwise(
+        grid: _gridState,
+        center: origin,
+      );
+      await _playGridTransition(activation.gridAfter);
+      _gridState = activation.gridAfter;
+      final cascadeResult = _cascadeResolver.resolve(_gridState);
+      await _playCascadeResult(cascadeResult);
+      _gridState = cascadeResult.finalGrid;
+      onCascadeSettled?.call();
+      return true;
+    } on RangeError {
+      return false;
+    }
+  }
+
+  Future<bool> _activateEchoCandy() async {
+    final lastCascadeStep = _lastCascadeStep;
+    if (lastCascadeStep == null) {
+      return false;
+    }
+    final replay = _echoCandy.scheduleReplay(lastCascadeStep);
+    await Future<void>.delayed(_durationFromSeconds(replay.delaySeconds));
+    await _playBoosterClearThenCascade(replay.replayPositions);
+    return true;
+  }
+
   Future<void> _attemptSwap(GridPosition first, GridPosition second) async {
     if (_interactionState != _BoardInteractionState.idle) {
+      return;
+    }
+    if (!_isInputEnabled()) {
       return;
     }
     _clearSelectedPosition();
@@ -268,8 +605,9 @@ class BoardComponent extends PositionComponent
     await _playAcceptedSwap(firstComponent, secondComponent, first, second);
     _commitVisualSwap(firstComponent, secondComponent, first, second);
     _gridState = swapResult.swappedGrid;
-    await _playCascadeSteps(swapResult);
+    await _playCascadeResult(swapResult.cascadeResult!);
     _gridState = swapResult.cascadeResult!.finalGrid;
+    onCascadeSettled?.call();
     _interactionState = _BoardInteractionState.idle;
   }
 
@@ -309,12 +647,89 @@ class BoardComponent extends PositionComponent
     ]);
   }
 
-  Future<void> _playCascadeSteps(SwapResult swapResult) async {
+  Future<void> _playCascadeResult(CascadeResult cascadeResult) async {
     var cascadeStepIndex = 0;
-    for (final cascadeStep in swapResult.cascadeResult!.steps) {
+    for (final cascadeStep in cascadeResult.steps) {
       onCascadeStepClear?.call(cascadeStepIndex);
+      onCascadeStepResolved?.call(cascadeStepIndex, cascadeStep);
+      _showComboLabel(cascadeStepIndex);
       await _playCascadeStep(cascadeStep);
+      _lastCascadeStep = cascadeStep;
       cascadeStepIndex += 1;
+    }
+  }
+
+  Future<void> _playBoosterClearThenCascade(
+    Iterable<GridPosition> positions,
+  ) async {
+    final clearedPositions = {
+      for (final position in positions)
+        if (_gridState.contains(position) &&
+            _gridState.tileAt(position) != null)
+          position,
+    };
+    if (clearedPositions.isEmpty) {
+      return;
+    }
+
+    final blockerDamageResult = _gridState.damageBlockers(clearedPositions);
+    final gridAfterClear = blockerDamageResult.grid.clearPositions(
+      clearedPositions,
+    );
+    final gridAfterGravity = _cascadeResolver.applyGravity(gridAfterClear);
+    final refillResult = _cascadeResolver.refillResolver.refill(
+      grid: gridAfterGravity,
+    );
+    final boosterStep = CascadeStepResult(
+      gridBeforeClear: _gridState,
+      gridAfterGravity: refillResult.grid,
+      matches: const [],
+      reactionEffects: const [],
+      clearedPositions: clearedPositions,
+      clearedBlockers: blockerDamageResult.clearedBlockers,
+    );
+    onCascadeStepClear?.call(0);
+    onCascadeStepResolved?.call(0, boosterStep);
+    await _playCascadeStep(boosterStep);
+    _lastCascadeStep = boosterStep;
+    _gridState = boosterStep.gridAfterGravity;
+
+    final cascadeResult = _cascadeResolver.resolve(_gridState);
+    await _playCascadeResult(cascadeResult);
+    _gridState = cascadeResult.finalGrid;
+    onCascadeSettled?.call();
+  }
+
+  Future<void> _playGridTransition(GridState gridAfter) async {
+    _interactionState = _BoardInteractionState.falling;
+    final destinationByTileId = _positionsByTileId(gridAfter);
+    final moves = <Future<void>>[];
+    final nextTileComponents = <GridPosition, TileComponent>{};
+
+    for (final entry in _tileComponents.entries) {
+      final tileComponent = entry.value;
+      final destination = destinationByTileId[tileComponent.tile.id];
+      if (destination == null) {
+        tileComponent.removeFromParent();
+        continue;
+      }
+      tileComponent.updateGridPosition(destination);
+      nextTileComponents[destination] = tileComponent;
+      final targetPosition = _positionForGridPosition(destination);
+      if (tileComponent.position != targetPosition) {
+        moves.add(_moveTileTo(tileComponent, targetPosition));
+      }
+    }
+
+    _tileComponents
+      ..clear()
+      ..addAll(nextTileComponents);
+
+    if (moves.isNotEmpty) {
+      await Future.wait(moves);
+    }
+    for (final entry in _tileComponents.entries) {
+      entry.value.position = _positionForGridPosition(entry.key);
     }
   }
 
@@ -326,10 +741,15 @@ class BoardComponent extends PositionComponent
 
   Future<void> _playClearAnimations(CascadeStepResult cascadeStep) async {
     _interactionState = _BoardInteractionState.clearing;
+    final specialCandyAnimation = _playSpecialCandyEffectAnimations(
+      cascadeStep,
+    );
     final reactionAnimation = _playReactionEffectAnimations(cascadeStep);
     if (reactionAnimation != null) {
       await Future<void>.delayed(
-        _durationFromSeconds(temperedShatterRowClearDelaySeconds),
+        _durationFromSeconds(
+          _motionDuration(temperedShatterRowClearDelaySeconds),
+        ),
       );
     }
 
@@ -337,12 +757,16 @@ class BoardComponent extends PositionComponent
     for (final clearedPosition in cascadeStep.clearedPositions) {
       final tileComponent = _tileComponents[clearedPosition];
       if (tileComponent != null) {
+        _spawnSugarSparkle(clearedPosition);
         _spawnReactiveStateEffects(cascadeStep, clearedPosition);
         clearAnimations.add(tileComponent.startClearAnimation());
       }
     }
     if (reactionAnimation != null) {
       clearAnimations.add(reactionAnimation);
+    }
+    if (specialCandyAnimation != null) {
+      clearAnimations.add(specialCandyAnimation);
     }
     if (clearAnimations.isNotEmpty) {
       await Future.wait(clearAnimations);
@@ -372,7 +796,13 @@ class BoardComponent extends PositionComponent
       nextTileComponents[destination] = tileComponent;
       final targetPosition = _positionForGridPosition(destination);
       if (tileComponent.position != targetPosition) {
-        moves.add(_fallTileTo(tileComponent, targetPosition));
+        moves.add(
+          _fallTileTo(
+            tileComponent,
+            targetPosition,
+            rowDistance: math.max(1, (destination.row - entry.key.row).abs()),
+          ),
+        );
       }
     }
 
@@ -380,11 +810,62 @@ class BoardComponent extends PositionComponent
       ..clear()
       ..addAll(nextTileComponents);
 
+    await _addRefilledTileComponents(
+      cascadeStep.gridAfterGravity,
+      nextTileComponents,
+      moves,
+    );
+
     if (moves.isNotEmpty) {
       await Future.wait(moves);
     }
     for (final entry in _tileComponents.entries) {
       entry.value.position = _positionForGridPosition(entry.key);
+    }
+  }
+
+  Future<void> _addRefilledTileComponents(
+    GridState gridState,
+    Map<GridPosition, TileComponent> nextTileComponents,
+    List<Future<void>> moves,
+  ) async {
+    final spawnedByColumn = <int, int>{};
+
+    for (var row = 0; row < gridState.rows; row += 1) {
+      for (var column = 0; column < gridState.columns; column += 1) {
+        final destination = GridPosition(row: row, column: column);
+        if (nextTileComponents.containsKey(destination)) {
+          continue;
+        }
+        final tile = gridState.tileAt(destination);
+        if (tile == null) {
+          continue;
+        }
+
+        final spawnDepth = spawnedByColumn[column] ?? 0;
+        spawnedByColumn[column] = spawnDepth + 1;
+        final targetPosition = _positionForGridPosition(destination);
+        final startPosition = Vector2(
+          targetPosition.x,
+          staticBoardPadding - (spawnDepth + 1) * (tileSize + tileGap),
+        );
+        final tileComponent = TileComponent(
+          tile: tile,
+          gridPosition: destination,
+          tileSize: tileSize,
+          position: startPosition,
+        );
+        nextTileComponents[destination] = tileComponent;
+        _tileComponents[destination] = tileComponent;
+        await add(tileComponent);
+        moves.add(
+          _fallTileTo(
+            tileComponent,
+            targetPosition,
+            rowDistance: destination.row + spawnDepth + 1,
+          ),
+        );
+      }
     }
   }
 
@@ -398,7 +879,10 @@ class BoardComponent extends PositionComponent
         : basicSwapDurationSeconds;
     final effect = MoveEffect.to(
       targetPosition,
-      EffectController(duration: duration, curve: Curves.easeInOutCubic),
+      EffectController(
+        duration: _motionDuration(duration),
+        curve: isRejectedReturn ? Curves.easeInOutCubic : Curves.easeOutCubic,
+      ),
     );
     tileComponent.add(effect);
     return effect.completed;
@@ -406,17 +890,51 @@ class BoardComponent extends PositionComponent
 
   Future<void> _fallTileTo(
     TileComponent tileComponent,
-    Vector2 targetPosition,
-  ) {
+    Vector2 targetPosition, {
+    required int rowDistance,
+  }) {
+    final fallDuration = _fallDuration(rowDistance);
     final effect = MoveEffect.to(
       targetPosition,
       EffectController(
-        duration: cascadeFallDurationSeconds,
-        curve: Curves.easeInOutCubic,
+        duration: _motionDuration(fallDuration),
+        curve: Curves.easeOutCubic,
       ),
     );
     tileComponent.add(effect);
-    return effect.completed;
+    return effect.completed.then((_) {
+      if (_reduceMotionEnabled) {
+        return null;
+      }
+      return tileComponent.startLandingBounce();
+    });
+  }
+
+  Future<void>? _playSpecialCandyEffectAnimations(
+    CascadeStepResult cascadeStep,
+  ) {
+    final animations = <Future<void>>[];
+    for (final activation in cascadeStep.specialCandyActivations) {
+      if (activation.specialCandyType == grid_special.SpecialCandyType.none ||
+          activation.clearedPositions.isEmpty) {
+        continue;
+      }
+
+      final effect = SpecialCandyEffectComponent(
+        activation: activation,
+        tileSize: tileSize,
+        tileGap: tileGap,
+        boardSize: size,
+        reduceMotion: _reduceMotionEnabled,
+      )..priority = specialCandyEffectPriority;
+      add(effect);
+      animations.add(effect.completed);
+    }
+
+    if (animations.isEmpty) {
+      return null;
+    }
+    return Future.wait(animations);
   }
 
   Future<void>? _playReactionEffectAnimations(CascadeStepResult cascadeStep) {
@@ -427,7 +945,9 @@ class BoardComponent extends PositionComponent
       }
 
       _temperedShatterSoundHook.playTemperedShatter();
-      _startTemperedShatterCameraShake();
+      if (!_reduceMotionEnabled) {
+        _startTemperedShatterCameraShake();
+      }
       final effect = TemperedShatterEffectComponent(
         row: reactionEffect.row,
         triggerPositions: reactionEffect.triggerPositions,
@@ -435,6 +955,7 @@ class BoardComponent extends PositionComponent
         tileSize: tileSize,
         tileGap: tileGap,
         size: size,
+        reduceMotion: _reduceMotionEnabled,
       )..priority = temperedShatterEffectPriority;
       add(effect);
       animations.add(effect.completed);
@@ -444,6 +965,19 @@ class BoardComponent extends PositionComponent
       return null;
     }
     return Future.wait(animations);
+  }
+
+  void _showComboLabel(int cascadeStepIndex) {
+    if (_reduceMotionEnabled || cascadeStepIndex < 1) {
+      return;
+    }
+    final labelHeight = math.max(tileSize * 1.35, 48.0);
+    final label = ComboLabelComponent(
+      cascadeStepIndex: cascadeStepIndex,
+      position: Vector2(0, staticBoardPadding + tileSize * 0.35),
+      size: Vector2(size.x, labelHeight),
+    )..priority = cascadeComboLabelPriority;
+    add(label);
   }
 
   void _startTemperedShatterCameraShake() {
@@ -458,6 +992,9 @@ class BoardComponent extends PositionComponent
   ) {
     final tile = cascadeStep.gridBeforeClear.tileAt(clearedPosition);
     if (tile == null || tile.reactiveState == ReactiveState.none) {
+      return;
+    }
+    if (_reduceMotionEnabled) {
       return;
     }
 
@@ -480,6 +1017,16 @@ class BoardComponent extends PositionComponent
       case ReactiveState.none:
         break;
     }
+  }
+
+  void _spawnSugarSparkle(GridPosition clearedPosition) {
+    if (_reduceMotionEnabled) {
+      return;
+    }
+    _spawnParticleEffect(
+      ParticleEffectKind.sugarSparkle,
+      _positionForGridPosition(clearedPosition),
+    );
   }
 
   void _spawnMoltenHeatTrail(
@@ -580,6 +1127,13 @@ class BoardComponent extends PositionComponent
     return effect;
   }
 
+  double _fallDuration(int rowDistance) {
+    final duration =
+        cascadeFallBaseDurationSeconds +
+        math.max(0, rowDistance - 1) * cascadeFallPerRowDurationSeconds;
+    return math.min(duration, cascadeFallMaxDurationSeconds);
+  }
+
   ParticleEffectKind? _particleKindFor(ReactiveState reactiveState) {
     switch (reactiveState) {
       case ReactiveState.molten:
@@ -643,7 +1197,11 @@ class BoardComponent extends PositionComponent
         boardY - row * pitch >= tileSize) {
       return null;
     }
-    return GridPosition(row: row, column: column);
+    final gridPosition = GridPosition(row: row, column: column);
+    if (!_gridState.isPlayable(gridPosition)) {
+      return null;
+    }
+    return gridPosition;
   }
 
   GridPosition? _dragTargetFor(GridPosition startPosition) {
@@ -666,6 +1224,15 @@ class BoardComponent extends PositionComponent
     );
   }
 
+  Rect _rectForGridPosition(GridPosition gridPosition) {
+    return Rect.fromLTWH(
+      staticBoardPadding + gridPosition.column * (tileSize + tileGap),
+      staticBoardPadding + gridPosition.row * (tileSize + tileGap),
+      tileSize,
+      tileSize,
+    );
+  }
+
   Map<String, GridPosition> _positionsByTileId(GridState gridState) {
     final positions = <String, GridPosition>{};
     for (var row = 0; row < gridState.rows; row += 1) {
@@ -683,6 +1250,19 @@ class BoardComponent extends PositionComponent
   Duration _durationFromSeconds(double seconds) {
     return Duration(milliseconds: (seconds * 1000).round());
   }
+
+  double _motionDuration(double seconds) {
+    if (!_reduceMotionEnabled) {
+      return seconds;
+    }
+    return math.min(seconds, 0.08);
+  }
+
+  bool _isInputEnabled() {
+    return isInputEnabledProvider?.call() ?? true;
+  }
+
+  bool get _reduceMotionEnabled => reduceMotionProvider?.call() ?? false;
 }
 
 enum _BoardInteractionState { idle, swapping, clearing, falling }

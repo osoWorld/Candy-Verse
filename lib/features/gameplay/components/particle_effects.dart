@@ -13,6 +13,7 @@ enum ParticleEffectKind {
   livingHeart,
   syrupSplash,
   spiceEmber,
+  sugarSparkle,
 }
 
 /// Pooled state-specific particle burst renderer in the Flame game layer.
@@ -80,6 +81,12 @@ class ParticleEffects extends PositionComponent {
 
       // DESIGN.md section 4: state-specific match particle silhouettes.
       switch (_kind) {
+        case ParticleEffectKind.sugarSparkle:
+          _drawSparkle(
+            canvas,
+            particleCenter,
+            particle.radius * (1 - progress),
+          );
         case ParticleEffectKind.frostShard:
           _drawShard(canvas, particleCenter, particle.radius * (1 - progress));
         case ParticleEffectKind.livingHeart:
@@ -123,6 +130,10 @@ class ParticleEffects extends PositionComponent {
         _color = CandyAlchemyColors.spice;
         _durationSeconds = spiceEmberDurationSeconds;
         _configureParticles(spreadMultiplier: 0.58, radiusMultiplier: 0.055);
+      case ParticleEffectKind.sugarSparkle:
+        _color = CandyAlchemyColors.sugarSparkle;
+        _durationSeconds = sugarSparkleDurationSeconds;
+        _configureParticles(spreadMultiplier: 0.78, radiusMultiplier: 0.055);
     }
   }
 
@@ -188,6 +199,20 @@ class ParticleEffects extends PositionComponent {
         center.dx,
         center.dy + radius,
       );
+    canvas.drawPath(path, _paint);
+  }
+
+  void _drawSparkle(Canvas canvas, Offset center, double radius) {
+    final path = Path()
+      ..moveTo(center.dx, center.dy - radius * 1.3)
+      ..lineTo(center.dx + radius * 0.32, center.dy - radius * 0.32)
+      ..lineTo(center.dx + radius * 1.3, center.dy)
+      ..lineTo(center.dx + radius * 0.32, center.dy + radius * 0.32)
+      ..lineTo(center.dx, center.dy + radius * 1.3)
+      ..lineTo(center.dx - radius * 0.32, center.dy + radius * 0.32)
+      ..lineTo(center.dx - radius * 1.3, center.dy)
+      ..lineTo(center.dx - radius * 0.32, center.dy - radius * 0.32)
+      ..close();
     canvas.drawPath(path, _paint);
   }
 }

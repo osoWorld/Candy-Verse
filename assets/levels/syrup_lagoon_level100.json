@@ -1,0 +1,162 @@
+{
+  "levelId": "syrup_lagoon_level100",
+  "kingdomId": "syrup_lagoon",
+  "levelNumber": 100,
+  "rows": 9,
+  "columns": 9,
+  "difficulty": "legendary",
+  "levelKind": "jelly",
+  "goalType": "clearObstacle",
+  "targetValue": 20,
+  "moveLimit": 20,
+  "availableStates": [
+    "none",
+    "syrup",
+    "living",
+    "spice"
+  ],
+  "availablePreGameBoosters": [
+    "fusionBooster",
+    "architectTile",
+    "echoCandy"
+  ],
+  "preLevelBoosters": [
+    "fusionBooster",
+    "architectTile",
+    "echoCandy"
+  ],
+  "boardMask": {},
+  "spawnRules": {
+    "seed": 1100,
+    "baseCandies": [
+      "cocoa",
+      "citrus",
+      "berry",
+      "mint",
+      "cream"
+    ],
+    "reactiveStates": [
+      "none",
+      "syrup",
+      "living",
+      "spice"
+    ]
+  },
+  "blockers": [
+    {
+      "position": "3,0",
+      "type": "syrupLock",
+      "hitPoints": 1
+    },
+    {
+      "position": "3,1",
+      "type": "syrupLock",
+      "hitPoints": 1
+    },
+    {
+      "position": "3,2",
+      "type": "syrupLock",
+      "hitPoints": 1
+    },
+    {
+      "position": "3,3",
+      "type": "syrupLock",
+      "hitPoints": 1
+    },
+    {
+      "position": "4,2",
+      "type": "syrupLock",
+      "hitPoints": 1
+    },
+    {
+      "position": "4,3",
+      "type": "syrupLock",
+      "hitPoints": 1
+    },
+    {
+      "position": "4,4",
+      "type": "syrupLock",
+      "hitPoints": 1
+    },
+    {
+      "position": "4,5",
+      "type": "syrupLock",
+      "hitPoints": 1
+    },
+    {
+      "position": "5,6",
+      "type": "syrupLock",
+      "hitPoints": 1
+    },
+    {
+      "position": "5,7",
+      "type": "syrupLock",
+      "hitPoints": 1
+    },
+    {
+      "position": "5,8",
+      "type": "syrupLock",
+      "hitPoints": 1
+    },
+    {
+      "position": "7,0",
+      "type": "syrupLock",
+      "hitPoints": 1
+    },
+    {
+      "position": "7,1",
+      "type": "syrupLock",
+      "hitPoints": 1
+    },
+    {
+      "position": "7,2",
+      "type": "syrupLock",
+      "hitPoints": 1
+    },
+    {
+      "position": "7,3",
+      "type": "syrupLock",
+      "hitPoints": 1
+    },
+    {
+      "position": "7,4",
+      "type": "syrupLock",
+      "hitPoints": 1
+    },
+    {
+      "position": "7,5",
+      "type": "syrupLock",
+      "hitPoints": 1
+    },
+    {
+      "position": "7,6",
+      "type": "syrupLock",
+      "hitPoints": 1
+    },
+    {
+      "position": "7,7",
+      "type": "syrupLock",
+      "hitPoints": 1
+    },
+    {
+      "position": "7,8",
+      "type": "syrupLock",
+      "hitPoints": 1
+    }
+  ],
+  "starThresholds": [
+    20000,
+    21500,
+    23500
+  ],
+  "friendScoreSeed": 91100,
+  "allowStartingMatches": false,
+  "specialCandyRules": {
+    "allowRowClear": true,
+    "allowColumnClear": true,
+    "allowWrapped": true,
+    "allowColorOrb": true,
+    "allowFishCharm": true,
+    "allowAlchemyBomb": true
+  }
+}

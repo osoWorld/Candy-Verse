@@ -1,0 +1,23 @@
+{
+  "kingdomId": "molten_bakery",
+  "name": "Molten Bakery",
+  "levelStart": 61,
+  "levelEnd": 80,
+  "palette": {
+    "sky": "#FF9A3D",
+    "ground": "#7A1E12",
+    "accent": "#FFD45A"
+  },
+  "story": {
+    "intro": "The Ember Imp overheats every oven in the bakery, scattering Spice sparks through the caramel vents.",
+    "outro": "Fresh caramel roads cool into golden ribbons, pointing Pip toward the lagoon."
+  },
+  "characters": [
+    "Ember Imp"
+  ],
+  "mapMotifs": [
+    "moltenBakery",
+    "ovenRoad",
+    "caramelLava"
+  ]
+}

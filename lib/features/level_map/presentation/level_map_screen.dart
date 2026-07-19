@@ -11,7 +11,7 @@ class LevelMapScreen extends GetView<LevelMapController> {
   /// Creates the Candy Alchemy Level Map screen.
   const LevelMapScreen({super.key});
 
-  /// Builds the recipe-book Level Map route.
+  /// Builds the fallback Alchemy Kingdoms level map route.
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,7 +19,7 @@ class LevelMapScreen extends GetView<LevelMapController> {
       appBar: AppBar(
         backgroundColor: CandyAlchemyColors.cream,
         foregroundColor: CandyAlchemyColors.cocoa,
-        title: const Text('Recipe Book'),
+        title: const Text('Alchemy Kingdoms'),
         leading: IconButton(
           onPressed: Get.back,
           icon: const Icon(Icons.arrow_back_rounded),

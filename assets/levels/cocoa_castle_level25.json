@@ -1,0 +1,110 @@
+{
+  "levelId": "cocoa_castle_level25",
+  "kingdomId": "cocoa_castle",
+  "levelNumber": 25,
+  "rows": 7,
+  "columns": 7,
+  "difficulty": "simple",
+  "levelKind": "jelly",
+  "goalType": "clearObstacle",
+  "targetValue": 10,
+  "moveLimit": 22,
+  "availableStates": [
+    "none",
+    "living",
+    "syrup"
+  ],
+  "availablePreGameBoosters": [
+    "fusionBooster",
+    "architectTile",
+    "echoCandy"
+  ],
+  "preLevelBoosters": [
+    "fusionBooster",
+    "architectTile",
+    "echoCandy"
+  ],
+  "boardMask": {},
+  "spawnRules": {
+    "seed": 1025,
+    "baseCandies": [
+      "cocoa",
+      "citrus",
+      "berry",
+      "mint",
+      "cream"
+    ],
+    "reactiveStates": [
+      "none",
+      "living",
+      "syrup"
+    ]
+  },
+  "blockers": [
+    {
+      "position": "3,4",
+      "type": "chocolate",
+      "hitPoints": 1
+    },
+    {
+      "position": "3,6",
+      "type": "chocolate",
+      "hitPoints": 1
+    },
+    {
+      "position": "4,1",
+      "type": "chocolate",
+      "hitPoints": 1
+    },
+    {
+      "position": "4,6",
+      "type": "chocolate",
+      "hitPoints": 1
+    },
+    {
+      "position": "5,0",
+      "type": "chocolate",
+      "hitPoints": 1
+    },
+    {
+      "position": "5,1",
+      "type": "chocolate",
+      "hitPoints": 1
+    },
+    {
+      "position": "5,2",
+      "type": "chocolate",
+      "hitPoints": 1
+    },
+    {
+      "position": "5,3",
+      "type": "chocolate",
+      "hitPoints": 1
+    },
+    {
+      "position": "5,4",
+      "type": "chocolate",
+      "hitPoints": 1
+    },
+    {
+      "position": "5,5",
+      "type": "chocolate",
+      "hitPoints": 1
+    }
+  ],
+  "starThresholds": [
+    6875,
+    8375,
+    10375
+  ],
+  "friendScoreSeed": 91025,
+  "allowStartingMatches": false,
+  "specialCandyRules": {
+    "allowRowClear": true,
+    "allowColumnClear": true,
+    "allowWrapped": true,
+    "allowColorOrb": true,
+    "allowFishCharm": false,
+    "allowAlchemyBomb": false
+  }
+}

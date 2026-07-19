@@ -1,0 +1,112 @@
+{
+  "levelId": "molten_bakery_level78",
+  "kingdomId": "molten_bakery",
+  "levelNumber": 78,
+  "rows": 9,
+  "columns": 9,
+  "difficulty": "nightmarishlyHard",
+  "levelKind": "ingredientDrop",
+  "goalType": "clearObstacle",
+  "targetValue": 10,
+  "moveLimit": 19,
+  "availableStates": [
+    "none",
+    "molten",
+    "frost",
+    "spice"
+  ],
+  "availablePreGameBoosters": [
+    "fusionBooster",
+    "architectTile",
+    "echoCandy"
+  ],
+  "preLevelBoosters": [
+    "fusionBooster",
+    "architectTile",
+    "echoCandy"
+  ],
+  "boardMask": {},
+  "spawnRules": {
+    "seed": 1078,
+    "baseCandies": [
+      "cocoa",
+      "citrus",
+      "berry",
+      "mint",
+      "cream"
+    ],
+    "reactiveStates": [
+      "none",
+      "molten",
+      "frost",
+      "spice"
+    ]
+  },
+  "blockers": [
+    {
+      "position": "4,0",
+      "type": "wafer",
+      "hitPoints": 2
+    },
+    {
+      "position": "4,1",
+      "type": "wafer",
+      "hitPoints": 2
+    },
+    {
+      "position": "4,2",
+      "type": "wafer",
+      "hitPoints": 2
+    },
+    {
+      "position": "4,5",
+      "type": "wafer",
+      "hitPoints": 2
+    },
+    {
+      "position": "5,8",
+      "type": "wafer",
+      "hitPoints": 2
+    },
+    {
+      "position": "6,6",
+      "type": "wafer",
+      "hitPoints": 2
+    },
+    {
+      "position": "6,7",
+      "type": "wafer",
+      "hitPoints": 2
+    },
+    {
+      "position": "6,8",
+      "type": "wafer",
+      "hitPoints": 2
+    },
+    {
+      "position": "8,3",
+      "type": "wafer",
+      "hitPoints": 2
+    },
+    {
+      "position": "8,4",
+      "type": "wafer",
+      "hitPoints": 2
+    }
+  ],
+  "starThresholds": [
+    16150,
+    17650,
+    19650
+  ],
+  "friendScoreSeed": 91078,
+  "allowStartingMatches": false,
+  "specialCandyRules": {
+    "allowRowClear": true,
+    "allowColumnClear": true,
+    "allowWrapped": true,
+    "allowColorOrb": true,
+    "allowFishCharm": true,
+    "allowAlchemyBomb": true
+  }
+}

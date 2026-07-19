@@ -1,0 +1,80 @@
+{
+  "levelId": "frosted_peaks_level47",
+  "kingdomId": "frosted_peaks",
+  "levelNumber": 47,
+  "rows": 8,
+  "columns": 8,
+  "difficulty": "simple",
+  "levelKind": "score",
+  "goalType": "score",
+  "targetValue": 12750,
+  "moveLimit": 23,
+  "availableStates": [
+    "none",
+    "frost",
+    "living"
+  ],
+  "availablePreGameBoosters": [
+    "fusionBooster",
+    "architectTile",
+    "echoCandy"
+  ],
+  "preLevelBoosters": [
+    "fusionBooster",
+    "architectTile",
+    "echoCandy"
+  ],
+  "boardMask": {},
+  "spawnRules": {
+    "seed": 1047,
+    "baseCandies": [
+      "cocoa",
+      "citrus",
+      "berry",
+      "mint",
+      "cream"
+    ],
+    "reactiveStates": [
+      "none",
+      "frost",
+      "living"
+    ]
+  },
+  "blockers": [
+    {
+      "position": "1,0",
+      "type": "ice",
+      "hitPoints": 2
+    },
+    {
+      "position": "2,3",
+      "type": "ice",
+      "hitPoints": 2
+    },
+    {
+      "position": "2,4",
+      "type": "ice",
+      "hitPoints": 2
+    },
+    {
+      "position": "2,5",
+      "type": "ice",
+      "hitPoints": 2
+    }
+  ],
+  "starThresholds": [
+    12750,
+    19125,
+    25500
+  ],
+  "friendScoreSeed": 91047,
+  "allowStartingMatches": false,
+  "specialCandyRules": {
+    "allowRowClear": true,
+    "allowColumnClear": true,
+    "allowWrapped": true,
+    "allowColorOrb": true,
+    "allowFishCharm": true,
+    "allowAlchemyBomb": false
+  }
+}

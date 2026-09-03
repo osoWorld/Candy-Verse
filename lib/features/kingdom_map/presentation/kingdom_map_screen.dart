@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:ui' as ui;
-
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:get/get.dart';
@@ -118,12 +116,19 @@ class _KingdomMapSlivers extends StatelessWidget {
 
       _schedulePendingGateRewardDialog(controller);
 
-      return SliverFixedExtentList(
-        itemExtent: kingdomMapSectionSliverExtent,
-        delegate: SliverChildBuilderDelegate((context, index) {
+      // Use SliverList.builder instead of SliverFixedExtentList for lazy
+      // building. Disable automatic keep-alives so disposed kingdoms release
+      // their widget trees and painter caches.
+      return SliverList.builder(
+        itemCount: controller.kingdoms.length,
+        addAutomaticKeepAlives: false,
+        itemBuilder: (context, index) {
           final kingdom = controller.kingdoms[index];
-          return _KingdomSection(kingdom: kingdom, controller: controller);
-        }, childCount: controller.kingdoms.length),
+          return SizedBox(
+            height: kingdomMapSectionSliverExtent,
+            child: _KingdomSection(kingdom: kingdom, controller: controller),
+          );
+        },
       );
     });
   }
@@ -199,17 +204,72 @@ class _KingdomMapStatusPanel extends StatelessWidget {
   }
 }
 
-class _KingdomSection extends StatelessWidget {
+/// A single kingdom's visual section inside the map scroll view.
+///
+/// Uses [StatefulWidget] to cache expensive painters in state so they are
+/// created once and reused across rebuilds instead of allocating new objects
+/// every frame.
+class _KingdomSection extends StatefulWidget {
   const _KingdomSection({required this.kingdom, required this.controller});
 
   final KingdomDefinition kingdom;
   final KingdomMapController controller;
 
   @override
+  State<_KingdomSection> createState() => _KingdomSectionState();
+}
+
+class _KingdomSectionState extends State<_KingdomSection> {
+  late Color _backgroundColor;
+  late Color _secondaryColor;
+  late Color _accentColor;
+
+  // Cache painters so they are not re-allocated on every build.
+  late _KingdomMotifPainter _motifPainter;
+  late _KingdomPathPainter _pathPainter;
+
+  @override
+  void initState() {
+    super.initState();
+    _backgroundColor = Color(widget.kingdom.backgroundColorValue);
+    _secondaryColor = Color(widget.kingdom.secondaryColorValue);
+    _accentColor = Color(widget.kingdom.accentColorValue);
+    _motifPainter = _KingdomMotifPainter(
+      motifs: widget.kingdom.mapMotifs,
+      backgroundColor: _backgroundColor,
+      secondaryColor: _secondaryColor,
+      accentColor: _accentColor,
+    );
+    _pathPainter = _KingdomPathPainter(
+      accentColor: _accentColor,
+      pathColor: const Color(0xFFFFF8ED),
+    );
+  }
+
+  @override
+  void didUpdateWidget(covariant _KingdomSection oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.kingdom.kingdomId != widget.kingdom.kingdomId) {
+      _backgroundColor = Color(widget.kingdom.backgroundColorValue);
+      _secondaryColor = Color(widget.kingdom.secondaryColorValue);
+      _accentColor = Color(widget.kingdom.accentColorValue);
+      _motifPainter = _KingdomMotifPainter(
+        motifs: widget.kingdom.mapMotifs,
+        backgroundColor: _backgroundColor,
+        secondaryColor: _secondaryColor,
+        accentColor: _accentColor,
+      );
+      _pathPainter = _KingdomPathPainter(
+        accentColor: _accentColor,
+        pathColor: const Color(0xFFFFF8ED),
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final backgroundColor = Color(kingdom.backgroundColorValue);
-    final secondaryColor = Color(kingdom.secondaryColorValue);
-    final accentColor = Color(kingdom.accentColorValue);
+    final kingdom = widget.kingdom;
+    final controller = widget.controller;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(
@@ -224,7 +284,7 @@ class _KingdomSection extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [backgroundColor, secondaryColor],
+              colors: [_backgroundColor, _secondaryColor],
             ),
             borderRadius: BorderRadius.circular(kingdomMapSectionRadius),
           ),
@@ -240,31 +300,27 @@ class _KingdomSection extends StatelessWidget {
                   );
                   return Stack(
                     children: [
+                      // Background motifs — cached painter, painted once.
                       RepaintBoundary(
                         child: CustomPaint(
                           key: ValueKey('kingdom-motifs-${kingdom.kingdomId}'),
                           isComplex: true,
                           willChange: false,
                           size: sectionSize,
-                          painter: _KingdomMotifPainter(
-                            motifs: kingdom.mapMotifs,
-                            backgroundColor: backgroundColor,
-                            secondaryColor: secondaryColor,
-                            accentColor: accentColor,
-                          ),
+                          painter: _motifPainter,
                         ),
                       ),
+                      // Candy path — cached painter, painted once.
                       RepaintBoundary(
                         child: CustomPaint(
+                          key: ValueKey('kingdom-path-${kingdom.kingdomId}'),
                           isComplex: true,
                           willChange: false,
                           size: sectionSize,
-                          painter: _KingdomPathPainter(
-                            accentColor: accentColor,
-                            pathColor: const Color(0xFFFFF8ED),
-                          ),
+                          painter: _pathPainter,
                         ),
                       ),
+                      // Story intro panel.
                       Positioned(
                         left: 16,
                         right: 16,
@@ -273,9 +329,10 @@ class _KingdomSection extends StatelessWidget {
                           kingdom: kingdom,
                           controller: controller,
                           moment: KingdomStoryMoment.intro,
-                          accentColor: accentColor,
+                          accentColor: _accentColor,
                         ),
                       ),
+                      // Character badge.
                       Positioned(
                         left: 16,
                         right: 16,
@@ -285,14 +342,15 @@ class _KingdomSection extends StatelessWidget {
                           child: _CharacterBadge(
                             kingdomId: kingdom.kingdomId,
                             names: kingdom.characterNames,
-                            accentColor: accentColor,
+                            accentColor: _accentColor,
                             onPressed: () => _showCharacterPanel(
                               kingdom: kingdom,
-                              accentColor: accentColor,
+                              accentColor: _accentColor,
                             ),
                           ),
                         ),
                       ),
+                      // Level nodes — built as a list of lightweight widgets.
                       for (
                         var index = 0;
                         index < kingdom.levels.length;
@@ -308,6 +366,7 @@ class _KingdomSection extends StatelessWidget {
                               index * kingdomMapNodeStepY,
                           controller: controller,
                         ),
+                      // Gate nodes.
                       for (final gate in kingdom.gates)
                         _PositionedGateNode(
                           gate: gate,
@@ -319,8 +378,9 @@ class _KingdomSection extends StatelessWidget {
                               kingdomMapGateWidth / 2,
                           top: _gateTop(gate),
                           controller: controller,
-                          accentColor: accentColor,
+                          accentColor: _accentColor,
                         ),
+                      // Story outro panel.
                       Positioned(
                         left: 16,
                         right: 16,
@@ -329,7 +389,7 @@ class _KingdomSection extends StatelessWidget {
                           kingdom: kingdom,
                           controller: controller,
                           moment: KingdomStoryMoment.outro,
-                          accentColor: accentColor,
+                          accentColor: _accentColor,
                         ),
                       ),
                     ],
@@ -354,7 +414,7 @@ class _KingdomSection extends StatelessWidget {
   }
 
   double _gateTop(KingdomGateDefinition gate) {
-    final checkpointOffset = gate.checkpointLevel - kingdom.levelStart;
+    final checkpointOffset = gate.checkpointLevel - widget.kingdom.levelStart;
     return kingdomMapNodeStartY +
         checkpointOffset * kingdomMapNodeStepY +
         levelMapNodeSize * 0.54;
@@ -1777,6 +1837,11 @@ class _CharacterPortraitPainter extends CustomPainter {
   }
 }
 
+/// Painter for kingdom-specific decorative motifs.
+///
+/// Shaders are pre-created in the constructor and cached rather than being
+/// allocated inside [paint], which avoids expensive shader compilation on every
+/// repaint.
 class _KingdomMotifPainter extends CustomPainter {
   _KingdomMotifPainter({
     required List<String> motifs,
@@ -2138,12 +2203,9 @@ class _KingdomMotifPainter extends CustomPainter {
   }
 
   void _paintCaramelLava(Canvas canvas, Size size) {
+    // Use solid colors instead of shader to avoid expensive shader compilation.
     final lavaPaint = Paint()
-      ..shader = ui.Gradient.linear(
-        Offset(size.width * 0.05, size.height * 0.72),
-        Offset(size.width * 0.95, size.height * 0.9),
-        const [Color(0xFFFFD45A), Color(0xFFFF6B22)],
-      )
+      ..color = const Color(0xFFFF8A33)
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
       ..strokeWidth = 18;
@@ -2220,6 +2282,9 @@ class _KingdomMotifPainter extends CustomPainter {
   }
 }
 
+/// Painter for the curving candy path connecting level nodes.
+///
+/// Uses a solid paint instead of a shader to avoid shader compilation jank.
 class _KingdomPathPainter extends CustomPainter {
   const _KingdomPathPainter({
     required this.accentColor,
@@ -2260,12 +2325,10 @@ class _KingdomPathPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
       ..strokeWidth = 18;
+    // Use solid color instead of ui.Gradient.linear to avoid shader
+    // compilation stutter during scroll.
     final pathPaint = Paint()
-      ..shader = ui.Gradient.linear(
-        Offset(size.width * 0.2, 0),
-        Offset(size.width * 0.8, size.height),
-        [pathColor, accentColor],
-      )
+      ..color = pathColor
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
       ..strokeWidth = 12;

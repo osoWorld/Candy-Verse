@@ -102,7 +102,8 @@ const double kingdomMapSectionSliverExtent =
 /// Kingdom Map scroll cache distance.
 ///
 /// Source: PRD.md section 17 - Kingdom Map must preserve 60fps scrolling.
-const double kingdomMapScrollCacheExtent = kingdomMapSectionSliverExtent * 2;
+/// Kept small to avoid pre-building multiple expensive kingdom sections.
+const double kingdomMapScrollCacheExtent = 600;
 
 /// Kingdom Map first node top position.
 ///
